@@ -7,6 +7,8 @@ function handlePost(req) {
         user: body.user,
         password: body.password,
         ldapAddress: body.ldapAddress,
+        ldapPort: body.ldapPort,
+        ldapBaseDn: body.ldapBaseDn,
         userStore: userStoreKey.toLowerCase()
     });
     return {
@@ -41,6 +43,10 @@ function ldapLogin(params) {
     bean.password = required(params, 'password');
 
     bean.ldapAddress = required(params, 'ldapAddress');
+    
+    bean.ldapPort = required(params, 'ldapPort');
+    
+    bean.ldapBaseDn = required(params, 'ldapBaseDn');
 
     bean.userStore = required(params, 'userStore');
 

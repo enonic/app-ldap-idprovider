@@ -54,22 +54,26 @@ function generateRedirectUrl() {
 function generateLoginPage(redirectUrl) {
     var jQueryUrl = portalLib.assetUrl({path: "js/jquery-2.2.0.min.js"});
     var appLoginJsUrl = portalLib.assetUrl({path: "js/login.js"});
+    var appLoginCssUrl = portalLib.assetUrl({path: "css/login.css"});
     var appLoginBackgroundUrl = portalLib.assetUrl({path: "common/images/background-1920.jpg"});
     var appLoginServiceUrl = portalLib.serviceUrl({service: "login"});
     var authConfig = authLib.getIdProviderConfig();
-    var ldapAddress = authConfig.ldapAddress;
 
     var configView = resolve('idprovider-config.txt');
     var config = mustacheLib.render(configView, {
         appLoginServiceUrl: appLoginServiceUrl,
-        ldapAddress: ldapAddress,
-        redirectUrl: redirectUrl
+        ldapAddress: authConfig.ldapAddress,
+        ldapPort: authConfig.ldapPort,
+        ldapBaseDn: authConfig.ldapBaseDn,
+        redirectUrl: redirectUrl,
+        authConfig: authConfig
     });
 
     var view = resolve('idprovider.html');
     var params = {
         jQueryUrl: jQueryUrl,
         appLoginJsUrl: appLoginJsUrl,
+        appLoginCssUrl: appLoginCssUrl,
         appLoginBackgroundUrl: appLoginBackgroundUrl,
         config: config
     };

@@ -12,6 +12,7 @@ import com.enonic.xp.security.User;
 import com.enonic.xp.security.UserStoreKey;
 import com.enonic.xp.security.auth.AuthenticationInfo;
 import com.enonic.xp.security.auth.UsernamePasswordAuthToken;
+import com.enonic.xp.session.Session;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,7 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
+import javax.naming.AuthenticationException;
 import javax.naming.Context;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
@@ -35,6 +37,10 @@ public class LdapLoginHandler
     private String password;
 
     private String ldapAddress;
+
+    private String ldapPort;
+
+    private String ldapBaseDn;
 
     private UserStoreKey userStore;
 
@@ -57,6 +63,16 @@ public class LdapLoginHandler
         this.ldapAddress = ldapAddress;
     }
 
+    public void setLdapPort( final String ldapPort )
+    {
+        this.ldapPort = ldapPort;
+    }
+
+    public void setLdapBaseDn( final String ldapBaseDn )
+    {
+        this.ldapBaseDn = ldapBaseDn;
+    }
+
     public void setUserStore( final String userStore )
     {
         this.userStore = UserStoreKey.from( userStore );
@@ -72,7 +88,16 @@ public class LdapLoginHandler
                 createUser();
             }
 
-            return new LoginResultMapper( authenticate() );
+            final AuthenticationInfo authInfo = authenticate();
+
+            if ( authInfo.isAuthenticated() ) {
+                final Session session = this.context.get().getLocalScope().getSession();
+                if (session != null) {
+                    session.setAttribute(authInfo);
+                }
+            }
+
+            return new LoginResultMapper( authInfo );
 
         }
 
@@ -95,6 +120,11 @@ public class LdapLoginHandler
             return result;
 
         }
+        catch ( AuthenticationException ae) {
+            LOG.info( "Credentials supplied by the user program are invalid or failed" +
+                      " to authenticate the user to the naming/directory service" );
+            return false;
+        }
         catch ( Exception e )
         {
             LOG.error( "Problem occured while authenticating: ", e );
@@ -106,9 +136,9 @@ public class LdapLoginHandler
     {
         final Hashtable<String, String> env = new Hashtable<>();
         env.put( Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory" );
-        env.put( Context.PROVIDER_URL, "ldap://" + ldapAddress + ":389" );
+        env.put( Context.PROVIDER_URL, "ldap://" + ldapAddress + ":" + ldapPort );
         env.put( Context.SECURITY_AUTHENTICATION, "simple" );
-        env.put( Context.SECURITY_PRINCIPAL, "uid=" + user + ",ou=People,dc=maxcrc,dc=com" );
+        env.put( Context.SECURITY_PRINCIPAL, "uid=" + user + "," + ldapBaseDn );
         env.put( Context.SECURITY_CREDENTIALS, password );
 
         return env;
