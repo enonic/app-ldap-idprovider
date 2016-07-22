@@ -2,6 +2,8 @@
     var CONFIG = {
         {{#redirectUrl}}redirectUrl: "{{{.}}}",{{/redirectUrl}}
         ldapAddress: "{{ldapAddress}}",
+        ldapPort: "{{ldapPort}}",
+        ldapBaseDn: "{{ldapBaseDn}}",
         appLoginServiceUrl: "{{appLoginServiceUrl}}"
     };
 </script>

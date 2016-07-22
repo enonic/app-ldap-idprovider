@@ -1,0 +1,154 @@
+.home-main-container {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    /** Branding */
+    /** Common */
+    /** Login Form **/
+}
+.home-main-container .center-panel {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+}
+.home-main-container .lazy-image {
+    width: 100%;
+    min-height: 100%;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+    transition: opacity 2s;
+}
+.home-main-container .lazy-image.empty {
+    opacity: 0;
+}
+.home-main-container h3,
+.home-main-container .installation-info {
+    font-size: 24px;
+    color: #fff;
+}
+.home-main-container .branding {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-align-items: center;
+    width: 200px;
+    height: 100%;
+    left: calc(50% - 125.35px);
+    margin-top: -120px;
+    position: absolute;
+    text-align: center;
+    z-index: 0;
+}
+.home-main-container .branding h1 {
+    white-space: nowrap;
+}
+.home-main-container .branding .installation-info {
+    font-size: 12px;
+    text-align: right;
+}
+.home-main-container .login-form {
+    position: static;
+    margin: -4px auto 0;
+}
+.home-main-container .login-form .message-container {
+    position: absolute;
+    width: 200px;
+    height: 28px;
+    line-height: 28px;
+    margin-top: 10px;
+    text-align: center;
+    overflow: hidden;
+    white-space: pre;
+    text-overflow: ellipsis;
+}
+.home-main-container .login-form .input-view {
+    font-family: "Open Sans", sans-serif;
+    font-size: 12px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+    border: 1px solid #eee;
+    vertical-align: top;
+    padding: 4px 9px;
+    background: none #fff !important;
+    width: 200px;
+}
+.home-main-container .login-form .input-view.invalid {
+    -webkit-animation: shake 0.5s 0s linear 1;
+    animation: shake 0.5s 0s linear 1;
+}
+.home-main-container .login-form .input-view.invalid[type=password] {
+    color: #cb0300;
+}
+.home-main-container .login-form .password-input {
+    padding-right: 35px;
+}
+.home-main-container .login-form .xp-admin-common-text-input {
+    min-height: initial;
+    margin-bottom: 13px;
+}
+.home-main-container .login-form .login-button {
+    width: 0;
+    height: 0;
+    border-top: 7px solid transparent;
+    border-left: 14px solid black;
+    border-bottom: 7px solid transparent;
+    border-right-width: 0px;
+    padding-right: 0px;
+    cursor: pointer;
+    outline: 0;
+
+    background-color: transparent;
+    position: absolute;
+    right: 0px;
+    top: 4px;
+    font-size: 20px;
+    color: #999999;
+}
+
+.home-main-container .login-form .password-container {
+    position: relative;
+}
+.home-main-container .center-panel .login-panel {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    -moz-align-items: center;
+    -ms-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+}
+.home-main-footer {
+    position: absolute;
+    display: table;
+    width: 100%;
+    bottom: 14px;
+    text-align: right;
+    z-index: calc(2499);
+    background-color: transparent;
+    font-family: "Open Sans", sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+}
+.home-main-footer > * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.home-main-footer a {
+    display: table-cell;
+    color: #fff;
+    padding-right: 20px;
+    text-decoration: none;
+    opacity: 0.4;
+}

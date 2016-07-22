@@ -6,6 +6,8 @@
     <meta name="theme-color" content="#ffffff">
     <title>Enonic XP - Login</title>
 
+    <link rel="stylesheet" type="text/css" href="{{appLoginCssUrl}}">
+
     {{{config}}}
     <script src="{{jQueryUrl}}"></script>
 </head>
@@ -26,7 +28,6 @@
                     <input id="password-input" class="input-view form-input password-input"
                            type="password" placeholder="password">
                     <button id="login-button" class="xp-admin-common-button login-button" style="display: none;">
-                        <span></span>
                     </button>
                 </div>
                 <div id="message-container" class="message-container"></div>
@@ -34,9 +35,6 @@
         </div>
     </div>
 </div>
-
-<div class="home-main-footer"><a href="https://no.wikipedia.org/wiki/Hav%C3%B8rn#/media/File:Haliaeetus_albicilla_(Svolv%C3%A6r,_2012).jpg"
-                                 target="_blank">Photo: Yathin S. Krishnappa</a></div>
 
 <script src="{{appLoginJsUrl}}"></script>
 </body>
