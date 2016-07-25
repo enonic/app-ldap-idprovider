@@ -64,7 +64,8 @@ function generateLoginPage(redirectUrl) {
         appLoginServiceUrl: appLoginServiceUrl,
         ldapAddress: authConfig.ldapAddress,
         ldapPort: authConfig.ldapPort,
-        ldapBaseDn: authConfig.ldapBaseDn,
+        ldapDialect: authConfig.ldapDialect,
+        userBaseDn: authConfig.userBaseDn,
         redirectUrl: redirectUrl,
         authConfig: authConfig
     });

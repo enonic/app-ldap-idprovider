@@ -1,6 +1,8 @@
 package com.enonic.xp.lib.auth;
 
 import com.enonic.xp.context.ContextBuilder;
+import com.enonic.xp.lib.auth.ldap.dialect.LdapDialect;
+import com.enonic.xp.lib.auth.ldap.dialect.LdapDialectResolver;
 import com.enonic.xp.script.bean.BeanContext;
 import com.enonic.xp.script.bean.ScriptBean;
 import com.enonic.xp.security.CreateUserParams;
@@ -40,9 +42,11 @@ public class LdapLoginHandler
 
     private String ldapPort;
 
-    private String ldapBaseDn;
+    private String userBaseDn;
 
     private UserStoreKey userStore;
+
+    private LdapDialect ldapDialect;
 
     private Supplier<SecurityService> securityService;
 
@@ -68,14 +72,18 @@ public class LdapLoginHandler
         this.ldapPort = ldapPort;
     }
 
-    public void setLdapBaseDn( final String ldapBaseDn )
+    public void setUserBaseDn( final String userBaseDn )
     {
-        this.ldapBaseDn = ldapBaseDn;
+        this.userBaseDn = userBaseDn;
     }
 
     public void setUserStore( final String userStore )
     {
         this.userStore = UserStoreKey.from( userStore );
+    }
+
+    public void setLdapDialect(String ldapDialect) {
+        this.ldapDialect = LdapDialectResolver.resolve(ldapDialect);
     }
 
     public LoginResultMapper login()
@@ -91,10 +99,7 @@ public class LdapLoginHandler
             final AuthenticationInfo authInfo = authenticate();
 
             if ( authInfo.isAuthenticated() ) {
-                final Session session = this.context.get().getLocalScope().getSession();
-                if (session != null) {
-                    session.setAttribute(authInfo);
-                }
+                createSession(authInfo);
             }
 
             return new LoginResultMapper( authInfo );
@@ -138,7 +143,7 @@ public class LdapLoginHandler
         env.put( Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory" );
         env.put( Context.PROVIDER_URL, "ldap://" + ldapAddress + ":" + ldapPort );
         env.put( Context.SECURITY_AUTHENTICATION, "simple" );
-        env.put( Context.SECURITY_PRINCIPAL, "uid=" + user + "," + ldapBaseDn );
+        env.put( Context.SECURITY_PRINCIPAL, ldapDialect.getUserIdAttribute() + "=" + user + "," + userBaseDn );
         env.put( Context.SECURITY_CREDENTIALS, password );
 
         return env;
@@ -168,6 +173,14 @@ public class LdapLoginHandler
 
         final AuthenticationInfo authInfo = runAsAuthenticated( () -> this.securityService.get().authenticate( usernameAuthToken ) );
         return authInfo;
+    }
+
+    private void createSession(final AuthenticationInfo authInfo)
+    {
+        final Session session = this.context.get().getLocalScope().getSession();
+        if (session != null) {
+            session.setAttribute(authInfo);
+        }
     }
 
     private <T> T runAsAuthenticated( Callable<T> runnable )

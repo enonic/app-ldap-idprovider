@@ -3,7 +3,8 @@
         {{#redirectUrl}}redirectUrl: "{{{.}}}",{{/redirectUrl}}
         ldapAddress: "{{ldapAddress}}",
         ldapPort: "{{ldapPort}}",
-        ldapBaseDn: "{{ldapBaseDn}}",
+        ldapDialect: "{{ldapDialect}}",
+        userBaseDn: "{{userBaseDn}}",
         appLoginServiceUrl: "{{appLoginServiceUrl}}"
     };
 </script>

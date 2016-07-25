@@ -24,7 +24,8 @@ function loginButtonClick() {
         password: $("#password-input").val(),
         ldapAddress: CONFIG.ldapAddress,
         ldapPort: CONFIG.ldapPort,
-        ldapBaseDn: CONFIG.ldapBaseDn
+        ldapDialect: CONFIG.ldapDialect,
+        userBaseDn: CONFIG.userBaseDn
 
     }
     $.ajax({
