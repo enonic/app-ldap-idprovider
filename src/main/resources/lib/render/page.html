@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{{title}}</title>
+
+    <link href="{{styleUrl}}" rel="stylesheet">
+    <link href="{{backgroundStyleUrl}}" rel="stylesheet">
+    <link href="{{colorStyleUrl}}" rel="stylesheet">
+    <script src="{{jQueryUrl}}"></script>
+
+    {{{config}}}
+</head>
+
+<body>
+<div class="container">
+    <div class="form-user-image">
+        <img class="form-user-image-svg" src="{{userImgUrl}}">
+    </div>
+
+    <form class="form-login">
+        <h2 class="form-login-heading">{{title}}</h2>
+        <input type="text" id="inputUsername" class="form-input" placeholder="Username or email" required autofocus>
+        <input type="password" id="inputPassword" class="form-input" placeholder="Password" required>
+        <button type="submit" class="form-button">LOGIN</button>
+        <span id="errorMessage" class="form-error-message hidden">Login failed!</span>
+    </form>
+</div>
+
+<script src="{{scriptUrl}}"></script>
+</body>
+</html>

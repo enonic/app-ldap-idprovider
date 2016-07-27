@@ -1,32 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <id-provider xmlns="urn:enonic:xp:model:1.0">
-  <mode>EXTERNAL</mode>
+  <mode>MIXED</mode>
   <config>
-    <input name="ldapAddress" type="TextLine">
-      <label>LDAP address</label>
-      <occurrences minimum="1" maximum="1" />
-      <default>127.0.0.1</default>
-    </input>
-    <input name="ldapPort" type="TextLine">
-      <label>LDAP port</label>
-      <occurrences minimum="1" maximum="1" />
-      <default>389</default>
-    </input>
-    <input name="userBaseDn" type="TextLine">
-      <label>LDAP user base DN</label>
-      <occurrences minimum="1" maximum="1" />
-      <default>dc=example,dc=com</default>
-    </input>
-    <input name="ldapDialect" type="ComboBox">
-      <label>Ldap Dialect</label>
-      <indexed>true</indexed>
-      <occurrences minimum="1" maximum="1"/>
-      <config>
-        <option value="oracle">Oracle</option>
-        <option value="ad">Active Directory</option>
-        <option value="generic">Generic</option>
-      </config>
-    </input>
+    <field-set name="ldapServer">
+      <label>LDAP Server</label>
+      <items>
+        <input name="ldapAddress" type="TextLine">
+          <label>LDAP server address</label>
+          <occurrences minimum="1" maximum="1"/>
+          <default>127.0.0.1</default>
+        </input>
+        <input name="ldapPort" type="TextLine">
+          <label>LDAP server port</label>
+          <occurrences minimum="1" maximum="1"/>
+          <default>389</default>
+        </input>
+        <input name="userBaseDn" type="TextLine">
+          <label>LDAP user base DN</label>
+          <occurrences minimum="1" maximum="1"/>
+          <default>dc=example,dc=com</default>
+        </input>
+        <input name="ldapDialect" type="ComboBox">
+          <label>Ldap Dialect</label>
+          <indexed>true</indexed>
+          <occurrences minimum="1" maximum="1"/>
+          <config>
+            <option value="ad">Active Directory</option>
+            <option value="generic">Generic</option>
+            <option value="oracle">Oracle</option>
+          </config>
+          <default>generic</default>
+        </input>
+      </items>
+    </field-set>
+
+    <field-set name="display">
+      <label>Display</label>
+      <items>
+        <input name="title" type="TextLine">
+          <label>Title</label>
+          <occurrences minimum="0" maximum="1"/>
+          <default>LDAP Login</default>
+        </input>
+        <input name="theme" type="ComboBox">
+          <label>Theme</label>
+          <occurrences minimum="0" maximum="1"/>
+          <config>
+            <option value="light-blue">Light Blue</option>
+            <option value="light-green">Light Green</option>
+            <option value="light-red">Light Red</option>
+            <option value="dark-blue">Dark Blue</option>
+            <option value="dark-green">Dark Green</option>
+            <option value="dark-red">Dark Red</option>
+          </config>
+          <default>light-blue</default>
+        </input>
+      </items>
+    </field-set>
   </config>
 
 </id-provider>

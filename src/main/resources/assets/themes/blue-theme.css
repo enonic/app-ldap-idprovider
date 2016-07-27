@@ -1,0 +1,7 @@
+.form-user-image, .form-button {
+    background-color: #337ab7;
+}
+
+.form-button:hover {
+    background-color: #286090;
+}

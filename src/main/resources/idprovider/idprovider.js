@@ -1,9 +1,10 @@
-var mustacheLib = require('/lib/xp/mustache');
 var portalLib = require('/lib/xp/portal');
 var authLib = require('/lib/xp/auth');
+var renderLib = require('/lib/render/render');
+var ldapLib = require('/lib/ldap');
 
 exports.handle401 = function (req) {
-    var body = generateLoginPage();
+    var body = renderLib.generateLoginPage();
 
     return {
         status: 401,
@@ -14,21 +15,38 @@ exports.handle401 = function (req) {
 
 exports.get = function (req) {
     var redirectUrl = generateRedirectUrl();
-    var body = generateLoginPage(redirectUrl);
+    var body = renderLib.generateLoginPage(redirectUrl);
 
     return {
-        status: 200,
         contentType: 'text/html',
         body: body
     };
 };
 
+exports.post = function (req) {
+    var body = JSON.parse(req.body);
+    var userStoreKey = portalLib.getUserStoreKey();
+    var idProviderConfig = authLib.getIdProviderConfig();
+    var loginResult = ldapLib.login({
+        user: body.user,
+        password: body.password,
+        ldapAddress: idProviderConfig.ldapAddress,
+        ldapPort: idProviderConfig.ldapPort,
+        ldapDialect: idProviderConfig.ldapDialect,
+        userBaseDn: idProviderConfig.userBaseDn,
+        userStore: userStoreKey
+    });
+    return {
+        body: loginResult,
+        contentType: 'application/json'
+    };
+};
+
 exports.login = function (req) {
     var redirectUrl = (req.validTicket && req.params.redirect) || generateRedirectUrl();
-    var body = generateLoginPage(redirectUrl);
+    var body = renderLib.generateLoginPage(redirectUrl);
 
     return {
-        status: 200,
         contentType: 'text/html',
         body: body
     };
@@ -49,34 +67,4 @@ function generateRedirectUrl() {
         return portalLib.pageUrl({id: site._id});
     }
     return '/';
-}
-
-function generateLoginPage(redirectUrl) {
-    var jQueryUrl = portalLib.assetUrl({path: "js/jquery-2.2.0.min.js"});
-    var appLoginJsUrl = portalLib.assetUrl({path: "js/login.js"});
-    var appLoginCssUrl = portalLib.assetUrl({path: "css/login.css"});
-    var appLoginBackgroundUrl = portalLib.assetUrl({path: "common/images/background-1920.jpg"});
-    var appLoginServiceUrl = portalLib.serviceUrl({service: "login"});
-    var authConfig = authLib.getIdProviderConfig();
-
-    var configView = resolve('idprovider-config.txt');
-    var config = mustacheLib.render(configView, {
-        appLoginServiceUrl: appLoginServiceUrl,
-        ldapAddress: authConfig.ldapAddress,
-        ldapPort: authConfig.ldapPort,
-        ldapDialect: authConfig.ldapDialect,
-        userBaseDn: authConfig.userBaseDn,
-        redirectUrl: redirectUrl,
-        authConfig: authConfig
-    });
-
-    var view = resolve('idprovider.html');
-    var params = {
-        jQueryUrl: jQueryUrl,
-        appLoginJsUrl: appLoginJsUrl,
-        appLoginCssUrl: appLoginCssUrl,
-        appLoginBackgroundUrl: appLoginBackgroundUrl,
-        config: config
-    };
-    return mustacheLib.render(view, params);
 }
