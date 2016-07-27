@@ -12,10 +12,20 @@
       <occurrences minimum="1" maximum="1" />
       <default>389</default>
     </input>
-    <input name="ldapBaseDn" type="TextLine">
-      <label>LDAP base DN</label>
+    <input name="userBaseDn" type="TextLine">
+      <label>LDAP user base DN</label>
       <occurrences minimum="1" maximum="1" />
       <default>dc=example,dc=com</default>
+    </input>
+    <input name="ldapDialect" type="ComboBox">
+      <label>Ldap Dialect</label>
+      <indexed>true</indexed>
+      <occurrences minimum="1" maximum="1"/>
+      <config>
+        <option value="oracle">Oracle</option>
+        <option value="ad">Active Directory</option>
+        <option value="generic">Generic</option>
+      </config>
     </input>
   </config>
 
