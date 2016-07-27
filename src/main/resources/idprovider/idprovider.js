@@ -51,7 +51,10 @@ exports.post = function (req) {
     }
 
     return {
-        body: {authenticated: false},
+        body: {
+            authenticated: false,
+            message: "Invalid credentials"
+        },
         contentType: 'application/json'
     };
 };
