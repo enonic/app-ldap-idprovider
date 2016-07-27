@@ -18,7 +18,6 @@ exports.get = function (req) {
     var body = renderLib.generateLoginPage(redirectUrl);
 
     return {
-        status: 200,
         contentType: 'text/html',
         body: body
     };
@@ -48,7 +47,6 @@ exports.login = function (req) {
     var body = renderLib.generateLoginPage(redirectUrl);
 
     return {
-        status: 200,
         contentType: 'text/html',
         body: body
     };
