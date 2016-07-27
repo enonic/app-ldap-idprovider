@@ -6,30 +6,18 @@ function handleAuthenticateResponse(loginResult) {
             location.reload();
         }
     } else {
-        $("#message-container").html("Login failed!");
-        $("#password-input").focus();
-        $("#username-input, #password-input, #login-button").addClass("invalid");
+        $("#errorMessage").removeClass("hidden");
+        $("#inputPassword").focus();
     }
 }
 
-function loginButtonClick() {
-    if (checkFieldsEmpty()) {
-        return;
-    }
-
-    $("#username-input, #password-input, #login-button").removeClass("invalid");
-
+function formSubmitted() {
     var data = {
-        user: $("#username-input").val(),
-        password: $("#password-input").val(),
-        ldapAddress: CONFIG.ldapAddress,
-        ldapPort: CONFIG.ldapPort,
-        ldapDialect: CONFIG.ldapDialect,
-        userBaseDn: CONFIG.userBaseDn
-
-    }
+        user: $("#inputUsername").val(),
+        password: $("#inputPassword").val()
+    };
     $.ajax({
-        url: CONFIG.appLoginServiceUrl,
+        url: CONFIG.loginUrl,
         type: 'post',
         dataType: 'json',
         contentType: 'application/json',
@@ -38,40 +26,13 @@ function loginButtonClick() {
     });
 }
 
-function checkFieldsEmpty() {
-    return $("#username-input").val() === "" || $("#password-input").val() === "";
-}
-
-function onInputTyped(event) {
-    $("#username-input, #password-input, #login-button").removeClass("invalid");
-
-    var fieldsEmpty = checkFieldsEmpty();
-    if (fieldsEmpty) {
-        $("#login-button").hide();
-        $("#message-container").html("");
-    } else {
-        $("#login-button").show();
-        if (event.which !== 13) {
-            $("#message-container").html("");
-        }
-    }
-}
-
-$("#login-button").click(function () {
-    loginButtonClick();
-    return false;
+$(".form-login").submit(function (event) {
+    formSubmitted();
+    event.preventDefault();
 });
 
-$("#username-input, #password-input").keyup(function (event) {
-    onInputTyped(event);
-});
-
-$("#username-input").click();// for mobile devices
-$("#username-input").focus();
-checkLoginButtonInterval = setInterval(function () { //workaround to show login button when browser autofills inputs
-    var fieldsEmpty = checkFieldsEmpty();
-    if (!fieldsEmpty) {
-        $("#login-button").show();
-        clearInterval(checkLoginButtonInterval);
+$("#inputUsername, #inputPassword").keyup(function (event) {
+    if (event.which !== 13) {
+        $("#message").addClass("hidden");
     }
-}, 100);
+});
