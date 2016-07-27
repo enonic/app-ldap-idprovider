@@ -25,19 +25,33 @@ exports.get = function (req) {
 
 exports.post = function (req) {
     var body = JSON.parse(req.body);
-    var userStoreKey = portalLib.getUserStoreKey();
     var idProviderConfig = authLib.getIdProviderConfig();
-    var loginResult = ldapLib.login({
-        user: body.user,
-        password: body.password,
+    var authenticated = ldapLib.authenticate({
+        ldapDialect: idProviderConfig.ldapDialect,
         ldapAddress: idProviderConfig.ldapAddress,
         ldapPort: idProviderConfig.ldapPort,
-        ldapDialect: idProviderConfig.ldapDialect,
         userBaseDn: idProviderConfig.userBaseDn,
-        userStore: userStoreKey
+        user: body.user,
+        password: body.password
     });
+
+    if (authenticated) {
+        //TODO Create if missing
+
+        var userStoreKey = portalLib.getUserStoreKey();
+        var loginResult = authLib.login({
+            user: body.user,
+            userStore: userStoreKey,
+            skipAuth: true
+        });
+        return {
+            body: loginResult,
+            contentType: 'application/json'
+        };
+    }
+
     return {
-        body: loginResult,
+        body: {authenticated: false},
         contentType: 'application/json'
     };
 };
