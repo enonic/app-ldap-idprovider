@@ -1,5 +1,6 @@
-var portalLib = require('/lib/xp/portal');
 var authLib = require('/lib/xp/auth');
+var contextLib = require('/lib/xp/context');
+var portalLib = require('/lib/xp/portal');
 var renderLib = require('/lib/render/render');
 var ldapLib = require('/lib/ldap');
 
@@ -25,6 +26,8 @@ exports.get = function (req) {
 
 exports.post = function (req) {
     var body = JSON.parse(req.body);
+
+    //Authenticates against the LDAP server
     var idProviderConfig = authLib.getIdProviderConfig();
     var authenticated = ldapLib.authenticate({
         ldapDialect: idProviderConfig.ldapDialect,
@@ -36,9 +39,34 @@ exports.post = function (req) {
     });
 
     if (authenticated) {
-        //TODO Create if missing
 
+        //Searches for the user in the user store
         var userStoreKey = portalLib.getUserStoreKey();
+        var user = runAsAdmin(function () {
+            return authLib.findPrincipals({
+                type: 'user',
+                userStore: userStoreKey,
+                start: 0,
+                count: 1,
+                name: body.user
+            }).hits[0]
+        });
+
+        //If the user does not exist in the user store
+        if (!user) {
+
+            //Creates the user
+            runAsAdmin(function () {
+                authLib.createUser({
+                    userStore: userStoreKey,
+                    name: body.user,
+                    displayName: body.user,
+                    email: 'userName@enonic.com'
+                });
+            });
+        }
+
+        //Logs the user in
         var loginResult = authLib.login({
             user: body.user,
             userStore: userStoreKey,
@@ -84,4 +112,13 @@ function generateRedirectUrl() {
         return portalLib.pageUrl({id: site._id});
     }
     return '/';
+}
+
+function runAsAdmin(callback) {
+    return contextLib.run({
+        user: {
+            login: 'su',   //TODO Change.
+            userStore: 'system'
+        }
+    }, callback);
 }
