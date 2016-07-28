@@ -4,11 +4,25 @@ exports.authenticate = function (params) {
     bean.ldapDialect = required(params, 'ldapDialect');
     bean.ldapAddress = required(params, 'ldapAddress');
     bean.ldapPort = required(params, 'ldapPort');
-    bean.userBaseDn = required(params, 'userBaseDn');
-    bean.user = required(params, 'user');
-    bean.password = required(params, 'password');
+    bean.authDn = required(params, 'authDn');
+    bean.authPassword = required(params, 'authPassword');
 
-    return bean.authenticate();
+    return bean.execute();
+};
+
+exports.findUser = function (params) {
+    var bean = __.newBean('com.enonic.app.ldapidprovider.LdapFindUserHandler');
+
+    bean.ldapDialect = required(params, 'ldapDialect');
+    bean.ldapAddress = required(params, 'ldapAddress');
+    bean.ldapPort = required(params, 'ldapPort');
+    bean.authDn = required(params, 'authDn');
+    bean.authPassword = required(params, 'authPassword');
+
+    bean.userBaseDn = required(params, 'userBaseDn');
+    bean.username = required(params, 'username');
+
+    return bean.execute();
 };
 
 function required(params, name) {

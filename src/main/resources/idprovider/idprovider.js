@@ -29,13 +29,26 @@ exports.post = function (req) {
 
     //Authenticates against the LDAP server
     var idProviderConfig = authLib.getIdProviderConfig();
+
+
+    var userDn = ldapLib.findUser({
+        ldapDialect: idProviderConfig.ldapDialect,
+        ldapAddress: idProviderConfig.ldapAddress,
+        ldapPort: idProviderConfig.ldapPort,
+        authDn: idProviderConfig.authDn,
+        authPassword: idProviderConfig.authPassword,
+        userBaseDn: idProviderConfig.userBaseDn,
+        username: body.user
+    });
+
+    //TODO Handle errors
+
     var authenticated = ldapLib.authenticate({
         ldapDialect: idProviderConfig.ldapDialect,
         ldapAddress: idProviderConfig.ldapAddress,
         ldapPort: idProviderConfig.ldapPort,
-        userBaseDn: idProviderConfig.userBaseDn,
-        user: body.user,
-        password: body.password
+        authDn: userDn,
+        authPassword: body.password
     });
 
     if (authenticated) {
