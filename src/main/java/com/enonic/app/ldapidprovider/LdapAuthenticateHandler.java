@@ -1,4 +1,4 @@
-package com.enonic.xp.lib.auth;
+package com.enonic.app.ldapidprovider;
 
 import java.util.Hashtable;
 
@@ -10,15 +10,15 @@ import javax.naming.directory.InitialDirContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.enonic.xp.lib.auth.ldap.dialect.LdapDialect;
-import com.enonic.xp.lib.auth.ldap.dialect.LdapDialectResolver;
+import com.enonic.app.ldapidprovider.dialect.LdapDialect;
+import com.enonic.app.ldapidprovider.dialect.LdapDialectResolver;
 import com.enonic.xp.script.bean.BeanContext;
 import com.enonic.xp.script.bean.ScriptBean;
 
-public class LdapHelper
+public class LdapAuthenticateHandler
     implements ScriptBean
 {
-    private final static Logger LOG = LoggerFactory.getLogger( LdapHelper.class );
+    private final static Logger LOG = LoggerFactory.getLogger( LdapAuthenticateHandler.class );
 
     private LdapDialect ldapDialect;
 

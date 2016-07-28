@@ -1,5 +1,5 @@
 exports.authenticate = function (params) {
-    var bean = __.newBean('com.enonic.xp.lib.auth.LdapHelper');
+    var bean = __.newBean('com.enonic.app.ldapidprovider.LdapAuthenticateHandler');
 
     bean.ldapDialect = required(params, 'ldapDialect');
     bean.ldapAddress = required(params, 'ldapAddress');
