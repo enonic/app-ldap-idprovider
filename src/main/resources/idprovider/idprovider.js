@@ -30,8 +30,8 @@ exports.post = function (req) {
     //Authenticates against the LDAP server
     var idProviderConfig = authLib.getIdProviderConfig();
 
-
-    var userDn = ldapLib.findUser({
+    //Finds the LDAP user
+    var ldapUser = ldapLib.findUser({
         ldapDialect: idProviderConfig.ldapDialect,
         ldapAddress: idProviderConfig.ldapAddress,
         ldapPort: idProviderConfig.ldapPort,
@@ -41,16 +41,20 @@ exports.post = function (req) {
         username: body.user
     });
 
-    //TODO Handle errors
+    //If the user is found
+    var authenticated;
+    if (ldapUser) {
+        //Authenticates the user
+        authenticated = ldapLib.authenticate({
+            ldapDialect: idProviderConfig.ldapDialect,
+            ldapAddress: idProviderConfig.ldapAddress,
+            ldapPort: idProviderConfig.ldapPort,
+            authDn: ldapUser.dn,
+            authPassword: body.password
+        });
+    }
 
-    var authenticated = ldapLib.authenticate({
-        ldapDialect: idProviderConfig.ldapDialect,
-        ldapAddress: idProviderConfig.ldapAddress,
-        ldapPort: idProviderConfig.ldapPort,
-        authDn: userDn,
-        authPassword: body.password
-    });
-
+    //If the user is authenticated
     if (authenticated) {
 
         //Searches for the user in the user store
@@ -72,19 +76,20 @@ exports.post = function (req) {
             runAsAdmin(function () {
                 authLib.createUser({
                     userStore: userStoreKey,
-                    name: body.user,
-                    displayName: body.user,
-                    email: 'userName@enonic.com'
+                    name: ldapUser.login,
+                    displayName: ldapUser.displayName,
+                    email: ldapUser.email
                 });
             });
         }
 
         //Logs the user in
         var loginResult = authLib.login({
-            user: body.user,
+            user: ldapUser.login,
             userStore: userStoreKey,
             skipAuth: true
         });
+
         return {
             body: loginResult,
             contentType: 'application/json'

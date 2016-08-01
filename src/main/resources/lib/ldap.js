@@ -22,7 +22,7 @@ exports.findUser = function (params) {
     bean.userBaseDn = required(params, 'userBaseDn');
     bean.username = required(params, 'username');
 
-    return bean.execute();
+    return __.toNativeObject(bean.execute());
 };
 
 function required(params, name) {

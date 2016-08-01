@@ -68,7 +68,7 @@ public abstract class AbstractLdapHandler
         }
         catch ( Exception e )
         {
-            LOG.error( "Problem occured while authenticating: ", e );
+            LOG.error( "Error occured while authenticating: ", e );
         }
         return null;
     }
