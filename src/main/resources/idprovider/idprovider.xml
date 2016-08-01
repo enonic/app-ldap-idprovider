@@ -5,21 +5,6 @@
     <field-set name="ldapServer">
       <label>LDAP Server</label>
       <items>
-        <input name="ldapAddress" type="TextLine">
-          <label>LDAP server address</label>
-          <occurrences minimum="1" maximum="1"/>
-          <default>127.0.0.1</default>
-        </input>
-        <input name="ldapPort" type="TextLine">
-          <label>LDAP server port</label>
-          <occurrences minimum="1" maximum="1"/>
-          <default>389</default>
-        </input>
-        <input name="userBaseDn" type="TextLine">
-          <label>LDAP user base DN</label>
-          <occurrences minimum="1" maximum="1"/>
-          <default>dc=example,dc=com</default>
-        </input>
         <input name="ldapDialect" type="ComboBox">
           <label>Ldap Dialect</label>
           <indexed>true</indexed>
@@ -30,6 +15,31 @@
             <option value="oracle">Oracle</option>
           </config>
           <default>generic</default>
+        </input>
+        <input name="ldapAddress" type="TextLine">
+          <label>LDAP server address</label>
+          <occurrences minimum="1" maximum="1"/>
+          <default>127.0.0.1</default>
+        </input>
+        <input name="ldapPort" type="TextLine">
+          <label>LDAP server port</label>
+          <occurrences minimum="1" maximum="1"/>
+          <default>389</default>
+        </input>
+        <input name="authDn" type="TextLine">
+          <label>Auth DN</label>
+          <occurrences minimum="1" maximum="1"/>
+          <default>cn=Manager,dc=my-domain,dc=com</default>
+        </input>
+        <input name="authPassword" type="TextLine">
+          <label>Auth password</label>
+          <occurrences minimum="1" maximum="1"/>
+          <default>secret</default>
+        </input>
+        <input name="userBaseDn" type="TextLine">
+          <label>LDAP user base DN</label>
+          <occurrences minimum="1" maximum="1"/>
+          <default>dc=my-domain,dc=com</default>
         </input>
       </items>
     </field-set>

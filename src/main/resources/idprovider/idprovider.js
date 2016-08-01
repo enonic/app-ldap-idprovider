@@ -1,5 +1,6 @@
-var portalLib = require('/lib/xp/portal');
 var authLib = require('/lib/xp/auth');
+var contextLib = require('/lib/xp/context');
+var portalLib = require('/lib/xp/portal');
 var renderLib = require('/lib/render/render');
 var ldapLib = require('/lib/ldap');
 
@@ -25,19 +26,81 @@ exports.get = function (req) {
 
 exports.post = function (req) {
     var body = JSON.parse(req.body);
-    var userStoreKey = portalLib.getUserStoreKey();
+
+    //Authenticates against the LDAP server
     var idProviderConfig = authLib.getIdProviderConfig();
-    var loginResult = ldapLib.login({
-        user: body.user,
-        password: body.password,
+
+    //Finds the LDAP user
+    var ldapUser = ldapLib.findUser({
+        ldapDialect: idProviderConfig.ldapDialect,
         ldapAddress: idProviderConfig.ldapAddress,
         ldapPort: idProviderConfig.ldapPort,
-        ldapDialect: idProviderConfig.ldapDialect,
+        authDn: idProviderConfig.authDn,
+        authPassword: idProviderConfig.authPassword,
         userBaseDn: idProviderConfig.userBaseDn,
-        userStore: userStoreKey
+        username: body.user
     });
+
+    //If the user is found
+    var authenticated;
+    if (ldapUser) {
+        //Authenticates the user
+        authenticated = ldapLib.authenticate({
+            ldapDialect: idProviderConfig.ldapDialect,
+            ldapAddress: idProviderConfig.ldapAddress,
+            ldapPort: idProviderConfig.ldapPort,
+            authDn: ldapUser.dn,
+            authPassword: body.password
+        });
+    }
+
+    //If the user is authenticated
+    if (authenticated) {
+
+        //Searches for the user in the user store
+        var userStoreKey = portalLib.getUserStoreKey();
+        var user = runAsAdmin(function () {
+            return authLib.findPrincipals({
+                type: 'user',
+                userStore: userStoreKey,
+                start: 0,
+                count: 1,
+                name: body.user
+            }).hits[0]
+        });
+
+        //If the user does not exist in the user store
+        if (!user) {
+
+            //Creates the user
+            runAsAdmin(function () {
+                authLib.createUser({
+                    userStore: userStoreKey,
+                    name: ldapUser.login,
+                    displayName: ldapUser.displayName,
+                    email: ldapUser.email
+                });
+            });
+        }
+
+        //Logs the user in
+        var loginResult = authLib.login({
+            user: ldapUser.login,
+            userStore: userStoreKey,
+            skipAuth: true
+        });
+
+        return {
+            body: loginResult,
+            contentType: 'application/json'
+        };
+    }
+
     return {
-        body: loginResult,
+        body: {
+            authenticated: false,
+            message: "Invalid credentials"
+        },
         contentType: 'application/json'
     };
 };
@@ -67,4 +130,13 @@ function generateRedirectUrl() {
         return portalLib.pageUrl({id: site._id});
     }
     return '/';
+}
+
+function runAsAdmin(callback) {
+    return contextLib.run({
+        user: {
+            login: 'su',   //TODO Change.
+            userStore: 'system'
+        }
+    }, callback);
 }

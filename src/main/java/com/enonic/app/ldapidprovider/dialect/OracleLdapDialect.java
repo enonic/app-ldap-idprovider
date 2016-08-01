@@ -3,7 +3,7 @@
  * http://www.enonic.com/license
  */
 
-package com.enonic.xp.lib.auth.ldap.dialect;
+package com.enonic.app.ldapidprovider.dialect;
 
 public final class OracleLdapDialect
     extends LdapDialect
