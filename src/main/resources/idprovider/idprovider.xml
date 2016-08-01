@@ -44,6 +44,16 @@
       </items>
     </field-set>
 
+
+    <input name="defaultPrincipals" type="PrincipalSelector">
+      <label>Default groups and roles</label>
+      <occurrences minimum="0" maximum="0"/>
+      <config>
+        <principalType>GROUP</principalType>
+        <principalType>ROLE</principalType>
+      </config>
+    </input>
+
     <field-set name="display">
       <label>Display</label>
       <items>
@@ -67,6 +77,7 @@
         </input>
       </items>
     </field-set>
+
   </config>
 
 </id-provider>

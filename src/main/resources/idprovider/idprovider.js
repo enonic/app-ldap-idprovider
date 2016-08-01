@@ -41,7 +41,7 @@ exports.post = function (req) {
         username: body.user
     });
 
-    //If the user is found
+    //If the lDAP user is found
     var authenticated;
     if (ldapUser) {
         //Authenticates the user
@@ -74,11 +74,17 @@ exports.post = function (req) {
 
             //Creates the user
             runAsAdmin(function () {
-                authLib.createUser({
+                user = authLib.createUser({
                     userStore: userStoreKey,
                     name: ldapUser.login,
                     displayName: ldapUser.displayName,
                     email: ldapUser.email
+                });
+
+
+                var defaultPrincipals = idProviderConfig.defaultPrincipals;
+                toArray(defaultPrincipals).forEach(function (defaultPrincipal) {
+                    authLib.addMembers(defaultPrincipal, [user.key])
                 });
             });
         }
@@ -140,3 +146,13 @@ function runAsAdmin(callback) {
         }
     }, callback);
 }
+
+function toArray(object) {
+    if (!object) {
+        return [];
+    }
+    if (object.constructor === Array) {
+        return object;
+    }
+    return [object];
+};
