@@ -46,10 +46,9 @@ public class LdapFindUserHandler
         searchControls.setReturningAttributes( attributeFilter );
         searchControls.setSearchScope( SearchControls.SUBTREE_SCOPE );
 
-        //TODO Sanitize special characters
-
+        final String sanitizedUsername = sanitizeLdapSearchString( username );
         final String filter =
-            "(&(objectClass=" + ldapDialect.getUserObjectClass() + ")(" + ldapDialect.getUserIdAttribute() + "=" + username + "))";
+            "(&(objectClass=" + ldapDialect.getUserObjectClass() + ")(" + ldapDialect.getUserIdAttribute() + "=" + sanitizedUsername + "))";
 
         try
         {
@@ -77,5 +76,35 @@ public class LdapFindUserHandler
         }
 
         return null;
+    }
+
+    private String sanitizeLdapSearchString( String value )
+    {
+        final StringBuilder sb = new StringBuilder();
+        for ( int i = 0; i < value.length(); i++ )
+        {
+            char c = value.charAt( i );
+            switch ( c )
+            {
+                case '\\':
+                    sb.append( "\\5c" );
+                    break;
+                case '*':
+                    sb.append( "\\2a" );
+                    break;
+                case '(':
+                    sb.append( "\\28" );
+                    break;
+                case ')':
+                    sb.append( "\\29" );
+                    break;
+                case '\u0000':
+                    sb.append( "\\00" );
+                    break;
+                default:
+                    sb.append( c );
+            }
+        }
+        return sb.toString();
     }
 }

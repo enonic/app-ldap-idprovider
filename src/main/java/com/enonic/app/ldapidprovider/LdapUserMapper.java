@@ -82,7 +82,6 @@ public class LdapUserMapper
         private void validate()
         {
             Preconditions.checkNotNull( this.dn, "DN cannot be null" );
-            Preconditions.checkNotNull( this.login, "DN cannot be null" );
             Preconditions.checkNotNull( this.displayName, "DN cannot be null" );
         }
 
