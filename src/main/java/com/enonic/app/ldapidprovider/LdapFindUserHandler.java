@@ -1,5 +1,8 @@
 package com.enonic.app.ldapidprovider;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.naming.NamingEnumeration;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
@@ -42,8 +45,6 @@ public class LdapFindUserHandler
         }
 
         SearchControls searchControls = new SearchControls();
-        String[] attributeFilter = {DISPLAY_NAME_ATTRIBUTE_KEY, EMAIL_ATTRIBUTE_KEY};
-        searchControls.setReturningAttributes( attributeFilter );
         searchControls.setSearchScope( SearchControls.SUBTREE_SCOPE );
 
         final String sanitizedUsername = sanitizeLdapSearchString( username );
@@ -52,21 +53,39 @@ public class LdapFindUserHandler
 
         try
         {
-            final NamingEnumeration<SearchResult> namingEnumeration = dirContext.search( userBaseDn, filter, searchControls );
-            if ( namingEnumeration.hasMore() )
+            final NamingEnumeration<SearchResult> searchResultEnumeration = dirContext.search( userBaseDn, filter, searchControls );
+            if ( searchResultEnumeration.hasMore() )
             {
-                final SearchResult searchResult = namingEnumeration.next();
+                final SearchResult searchResult = searchResultEnumeration.next();
                 final String userDn = searchResult.getNameInNamespace();
-                final Attributes searchResultAttributes = searchResult.getAttributes();
-                final Attribute displayNameAttribute = searchResultAttributes.get( DISPLAY_NAME_ATTRIBUTE_KEY );
-                final Attribute emailAttribute = searchResultAttributes.get( EMAIL_ATTRIBUTE_KEY );
+                final Attributes attributes = searchResult.getAttributes();
+                final Attribute displayNameAttribute = attributes.get( DISPLAY_NAME_ATTRIBUTE_KEY );
+                final Attribute emailAttribute = attributes.get( EMAIL_ATTRIBUTE_KEY );
 
-                return LdapUserMapper.create().
+                final LdapUserMapper.Builder ldapUserMapper = LdapUserMapper.create().
                     dn( userDn ).
                     login( username ).
-                    displayName( displayNameAttribute.size() > 0 ? (String) displayNameAttribute.get( 0 ) : null ).
-                    email( emailAttribute.size() > 0 ? (String) emailAttribute.get( 0 ) : null ).
-                    build();
+                    displayName( displayNameAttribute != null ? (String) displayNameAttribute.get() : null ).
+                    email( emailAttribute != null ? (String) emailAttribute.get() : null );
+
+                final NamingEnumeration<? extends Attribute> attributesEnumeration = attributes.getAll();
+                while ( attributesEnumeration.hasMore() )
+                {
+                    final Attribute attribute = attributesEnumeration.next();
+
+                    if ( !ldapDialect.getPasswordAttribute().equals( attribute.getID() ) )
+                    {
+                        final NamingEnumeration<?> attributeValueEnumeration = attribute.getAll();
+                        List<Object> attributeValueList = new LinkedList<>();
+                        while ( attributeValueEnumeration.hasMore() )
+                        {
+                            attributeValueList.add( attributeValueEnumeration.next() ); //TODO
+                        }
+                        ldapUserMapper.addAttribute( attribute.getID(), attributeValueList );
+                    }
+                }
+
+                return ldapUserMapper.build();
             }
 
         }
