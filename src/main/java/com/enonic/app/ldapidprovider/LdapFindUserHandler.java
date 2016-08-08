@@ -73,13 +73,16 @@ public class LdapFindUserHandler
                 {
                     final Attribute attribute = attributesEnumeration.next();
 
-                    final NamingEnumeration<?> attributeValueEnumeration = attribute.getAll();
-                    List<Object> attributeValueList = new LinkedList<>();
-                    while ( attributeValueEnumeration.hasMore() )
+                    if ( !ldapDialect.getPasswordAttribute().equals( attribute.getID() ) )
                     {
-                        attributeValueList.add( attributeValueEnumeration.next() ); //TODO
+                        final NamingEnumeration<?> attributeValueEnumeration = attribute.getAll();
+                        List<Object> attributeValueList = new LinkedList<>();
+                        while ( attributeValueEnumeration.hasMore() )
+                        {
+                            attributeValueList.add( attributeValueEnumeration.next() ); //TODO
+                        }
+                        ldapUserMapper.addAttribute( attribute.getID(), attributeValueList );
                     }
-                    ldapUserMapper.addAttribute( attribute.getID(), attributeValueList );
                 }
 
                 return ldapUserMapper.build();

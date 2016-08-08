@@ -76,11 +76,9 @@ exports.post = function (req) {
             runAsAdmin(function () {
                 user = authLib.createUser({
                     userStore: userStoreKey,
-                    name: ldapUser.login,
                     displayName: ldapUser.displayName,
                     email: ldapUser.email
                 });
-
 
                 var defaultPrincipals = idProviderConfig.defaultPrincipals;
                 toArray(defaultPrincipals).forEach(function (defaultPrincipal) {
@@ -88,6 +86,19 @@ exports.post = function (req) {
                 });
             });
         }
+
+        //Updates the user attributes
+        runAsAdmin(function () {
+            authLib.modifyUserExtraData({
+                key: user.key,
+                namespace: 'com.enonic.app.ldapidprovider',
+                editor: function () {
+                    return {
+                        attributes: ldapUser.attributes
+                    };
+                }
+            });
+        });
 
         //Logs the user in
         var loginResult = authLib.login({
