@@ -1,13 +1,14 @@
 package com.enonic.app.ldapidprovider;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.google.common.base.Preconditions;
 
 import com.enonic.xp.script.serializer.MapGenerator;
 import com.enonic.xp.script.serializer.MapSerializable;
 
-/**
- * Created by gri on 29/07/16.
- */
 public class LdapUserMapper
     implements MapSerializable
 {
@@ -19,12 +20,15 @@ public class LdapUserMapper
 
     private String email;
 
+    private Map<String, List<Object>> attributes;
+
     private LdapUserMapper( final Builder builder )
     {
         dn = builder.dn;
         login = builder.login;
         displayName = builder.displayName;
         email = builder.email;
+        attributes = builder.attributes;
     }
 
     public static Builder create()
@@ -39,6 +43,14 @@ public class LdapUserMapper
         gen.value( "login", login );
         gen.value( "displayName", displayName );
         gen.value( "email", email );
+
+        gen.map( "attributes" );
+        attributes.entrySet().forEach( attribute -> {
+            gen.array( attribute.getKey() );
+            attribute.getValue().forEach( attributeValue -> gen.value( attributeValue ) );
+            gen.end();
+        } );
+        gen.end();
     }
 
     public static final class Builder
@@ -50,6 +62,8 @@ public class LdapUserMapper
         private String displayName;
 
         private String email;
+
+        private Map<String, List<Object>> attributes = new HashMap<>();
 
         private Builder()
         {
@@ -76,6 +90,12 @@ public class LdapUserMapper
         public Builder email( final String email )
         {
             this.email = email;
+            return this;
+        }
+
+        public Builder addAttribute( final String key, final List<Object> values )
+        {
+            this.attributes.put( key, values );
             return this;
         }
 
