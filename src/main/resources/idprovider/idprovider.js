@@ -76,7 +76,8 @@ exports.post = function (req) {
             runAsAdmin(function () {
                 user = authLib.createUser({
                     userStore: userStoreKey,
-                    displayName: ldapUser.displayName,
+                    name: ldapUser.login,
+                    displayName: ldapUser.displayName || ldapUser.login,
                     email: ldapUser.email
                 });
 
@@ -89,9 +90,9 @@ exports.post = function (req) {
 
         //Updates the user attributes
         runAsAdmin(function () {
-            authLib.modifyUserExtraData({
+            authLib.modifyProfile({
                 key: user.key,
-                namespace: 'com.enonic.app.ldapidprovider',
+                scope: 'ldap',
                 editor: function () {
                     return {
                         attributes: ldapUser.attributes
