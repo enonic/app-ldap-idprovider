@@ -3,6 +3,7 @@ var contextLib = require('/lib/xp/context');
 var portalLib = require('/lib/xp/portal');
 var renderLib = require('/lib/render/render');
 var ldapLib = require('/lib/ldap');
+var userLib = require('/lib/user');
 
 exports.handle401 = function (req) {
     var body = renderLib.generateLoginPage();
@@ -60,12 +61,10 @@ exports.post = function (req) {
         //Searches for the user in the user store
         var userStoreKey = portalLib.getUserStoreKey();
         var user = runAsAdmin(function () {
-            return authLib.findPrincipals({
-                type: 'user',
-                userStore: userStoreKey,
+            return authLib.findUsers({
                 start: 0,
                 count: 1,
-                name: body.user
+                query: "userstorekey = '" + userStoreKey + "' AND profile.ldap.dn = '" + ldapUser.dn + "'"
             }).hits[0]
         });
 
@@ -76,7 +75,7 @@ exports.post = function (req) {
             runAsAdmin(function () {
                 user = authLib.createUser({
                     userStore: userStoreKey,
-                    name: ldapUser.login,
+                    name: userLib.generateUniqueUserName(userStoreKey, ldapUser.login),
                     displayName: ldapUser.displayName || ldapUser.login,
                     email: ldapUser.email
                 });
@@ -95,6 +94,7 @@ exports.post = function (req) {
                 scope: 'ldap',
                 editor: function () {
                     return {
+                        dn: ldapUser.dn,
                         attributes: ldapUser.attributes
                     };
                 }
@@ -103,7 +103,7 @@ exports.post = function (req) {
 
         //Logs the user in
         var loginResult = authLib.login({
-            user: ldapUser.login,
+            user: user.login,
             userStore: userStoreKey,
             skipAuth: true
         });
