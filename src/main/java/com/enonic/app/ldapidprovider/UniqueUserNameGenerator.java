@@ -16,7 +16,7 @@ public class UniqueUserNameGenerator
 {
     private final static SecureRandom SECURE_RANDOM = new SecureRandom();
 
-    private Supplier<String> idGenerator = () -> new BigInteger( 50, SECURE_RANDOM ).toString( 32 );
+    private Supplier<String> idGenerator = () -> new BigInteger( 64, SECURE_RANDOM ).toString( 10 );
 
     private UserStoreKey userStoreKey;
 
