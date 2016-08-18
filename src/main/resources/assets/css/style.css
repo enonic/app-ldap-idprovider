@@ -43,7 +43,7 @@ body, input, button {
     color: #d9534f;
 }
 
-.form-login-text {
+.form-login-text, .form-forgot-pwd-link {
     font-size: 15px;
 }
 
