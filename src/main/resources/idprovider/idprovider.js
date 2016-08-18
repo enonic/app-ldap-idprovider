@@ -61,11 +61,7 @@ exports.post = function (req) {
         //Searches for the user in the user store
         var userStoreKey = portalLib.getUserStoreKey();
         var user = runAsAdmin(function () {
-            return authLib.findUsers({
-                start: 0,
-                count: 1,
-                query: "userstorekey = '" + userStoreKey + "' AND profile.ldap.dn = '" + ldapUser.dn + "'"
-            }).hits[0]
+            return authLib.getPrincipal("user:" + userStoreKey + ":" + ldapUser.login);
         });
 
         //If the user does not exist in the user store
@@ -75,7 +71,7 @@ exports.post = function (req) {
             runAsAdmin(function () {
                 user = authLib.createUser({
                     userStore: userStoreKey,
-                    name: userLib.generateUniqueUserName(userStoreKey, ldapUser.login),
+                    name: ldapUser.login,
                     displayName: ldapUser.displayName || ldapUser.login,
                     email: ldapUser.email
                 });
