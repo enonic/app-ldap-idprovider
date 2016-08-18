@@ -19,11 +19,11 @@ input {
 ****************************************************/
 
 body, input, button {
-    font-family: arial, sans-serif;
+    font-family: 'Open Sans', arial, sans-serif;
 }
 
 .form-login-heading {
-    font-weight: 500;
+    font-weight: 400;
     font-size: 30px;
     line-height: 1.1;
 }
@@ -41,6 +41,10 @@ body, input, button {
 
 .form-error-message {
     color: #d9534f;
+}
+
+.form-login-text {
+    font-size: 15px;
 }
 
 .form-user-image, .form-login {
@@ -92,8 +96,15 @@ body, input, button {
 
 .form-input, .form-button, .form-forgot-pwd-link, .form-error-message {
     padding: 10px;
+}
+
+.form-input, .form-button {
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+.form-login-text {
+    margin-top: 0;
 }
 
 .form-button {

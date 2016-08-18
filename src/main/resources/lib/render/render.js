@@ -15,6 +15,7 @@ exports.generateLoginPage = function (redirectUrl) {
     var jQueryUrl = portalLib.assetUrl({path: "js/jquery-2.2.0.min.js"});
     var styleUrl = portalLib.assetUrl({path: "css/style.css"});
     var userImgUrl = portalLib.assetUrl({path: "img/user.svg"});
+    var opensansRegularUrl = portalLib.assetUrl({path: "fonts/opensans-regular"});
     var scriptUrl = portalLib.assetUrl({path: "js/login.js"});
 
     //Renders the config
@@ -33,6 +34,7 @@ exports.generateLoginPage = function (redirectUrl) {
         colorStyleUrl: colorStyleUrl,
         jQueryUrl: jQueryUrl,
         userImgUrl: userImgUrl,
+        opensansRegularUrl: opensansRegularUrl,
         scriptUrl: scriptUrl,
         config: config
     });
