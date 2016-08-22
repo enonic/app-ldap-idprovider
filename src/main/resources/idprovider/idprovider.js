@@ -3,7 +3,6 @@ var contextLib = require('/lib/xp/context');
 var portalLib = require('/lib/xp/portal');
 var renderLib = require('/lib/render/render');
 var ldapLib = require('/lib/ldap');
-var userLib = require('/lib/user');
 
 exports.handle401 = function (req) {
     var body = renderLib.generateLoginPage();
@@ -64,10 +63,24 @@ exports.post = function (req) {
             return authLib.getPrincipal("user:" + userStoreKey + ":" + ldapUser.login);
         });
 
-        //If the user does not exist in the user store
-        if (!user) {
+        //If the user already exist in the user store
+        if (user) {
 
-            //Creates the user
+            //Updates the display name and email address 
+            runAsAdmin(function () {
+                user = authLib.modifyUser({
+                    key: user.key,
+                    editor: function (u) {
+                        u.displayName = ldapUser.displayName || ldapUser.login;
+                        u.email = ldapUser.email;
+                        return u;
+                    }
+                });
+            });
+
+        } else {
+
+            //Else, creates the user
             runAsAdmin(function () {
                 user = authLib.createUser({
                     userStore: userStoreKey,
@@ -76,23 +89,24 @@ exports.post = function (req) {
                     email: ldapUser.email
                 });
 
-                var defaultPrincipals = idProviderConfig.defaultPrincipals;
-                toArray(defaultPrincipals).forEach(function (defaultPrincipal) {
-                    authLib.addMembers(defaultPrincipal, [user.key])
+                var defaultGroups = idProviderConfig.defaultGroups;
+                toArray(defaultGroups).forEach(function (defaultGroup) {
+                    authLib.addMembers(defaultGroup, [user.key])
                 });
             });
         }
 
         //Updates the user attributes
         runAsAdmin(function () {
+            if (!ldapUser.attributes.dn) {
+                ldapUser.attributes.dn = ldapUser.dn;
+            }
+
             authLib.modifyProfile({
                 key: user.key,
                 scope: 'ldap',
                 editor: function () {
-                    return {
-                        dn: ldapUser.dn,
-                        attributes: ldapUser.attributes
-                    };
+                    return ldapUser.attributes;
                 }
             });
         });
@@ -149,11 +163,12 @@ function generateRedirectUrl() {
 function runAsAdmin(callback) {
     return contextLib.run({
         user: {
-            login: 'su',   //TODO Change.
+            login: 'su',
             userStore: 'system'
-        }
+        },
+        principals: ["role:system.admin"]
     }, callback);
-}
+};
 
 function toArray(object) {
     if (!object) {

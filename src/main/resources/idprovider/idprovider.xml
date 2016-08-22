@@ -45,14 +45,18 @@
     </field-set>
 
 
-    <input name="defaultPrincipals" type="PrincipalSelector">
-      <label>Default groups and roles</label>
-      <occurrences minimum="0" maximum="0"/>
-      <config>
-        <principalType>GROUP</principalType>
-        <principalType>ROLE</principalType>
-      </config>
-    </input>
+    <field-set name="groups">
+      <label>Groups</label>
+      <items>
+        <input name="defaultGroups" type="PrincipalSelector">
+          <label>Groups</label>
+          <occurrences minimum="0" maximum="0"/>
+          <config>
+            <principalType>GROUP</principalType>
+          </config>
+        </input>
+      </items>
+    </field-set>
 
     <field-set name="display">
       <label>Display</label>
