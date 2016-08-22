@@ -6,7 +6,7 @@ function handleAuthenticateResponse(loginResult) {
             location.reload();
         }
     } else {
-        $("#errorMessage").removeClass("hidden");
+        $("#formError").removeClass("hidden");
         $("#inputPassword").focus();
     }
 }
@@ -26,13 +26,13 @@ function formSubmitted() {
     });
 }
 
-$(".form-login").submit(function (event) {
+$(".form").submit(function (event) {
     formSubmitted();
     event.preventDefault();
 });
 
 $("#inputUsername, #inputPassword").keyup(function (event) {
     if (event.which !== 13) {
-        $("#errorMessage").addClass("hidden");
+        $("#formError").addClass("hidden");
     }
 });
