@@ -20,7 +20,7 @@ exports.findUser = function (params) {
     bean.authPassword = required(params, 'authPassword');
 
     bean.userBaseDn = required(params, 'userBaseDn');
-    bean.username = required(params, 'username');
+    bean.username = params.username;
 
     return __.toNativeObject(bean.execute());
 };

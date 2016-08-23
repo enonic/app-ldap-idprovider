@@ -48,8 +48,14 @@ public class LdapFindUserHandler
         searchControls.setSearchScope( SearchControls.SUBTREE_SCOPE );
 
         final String sanitizedUsername = sanitizeLdapSearchString( username );
-        final String filter =
-            "(&(objectClass=" + ldapDialect.getUserObjectClass() + ")(" + ldapDialect.getUserIdAttribute() + "=" + sanitizedUsername + "))";
+        final String filter = new StringBuilder( "(&(objectClass=" ).
+            append( ldapDialect.getUserObjectClass() ).
+            append( ")(" ).
+            append( sanitizedUsername.contains( "@" ) ? EMAIL_ATTRIBUTE_KEY : ldapDialect.getUserIdAttribute() ).
+            append( "=" ).
+            append( sanitizedUsername ).
+            append( "))" ).
+            toString();
 
         try
         {
@@ -59,12 +65,13 @@ public class LdapFindUserHandler
                 final SearchResult searchResult = searchResultEnumeration.next();
                 final String userDn = searchResult.getNameInNamespace();
                 final Attributes attributes = searchResult.getAttributes();
+                final Attribute loginAttribute = attributes.get( ldapDialect.getUserIdAttribute() );
                 final Attribute displayNameAttribute = attributes.get( DISPLAY_NAME_ATTRIBUTE_KEY );
                 final Attribute emailAttribute = attributes.get( EMAIL_ATTRIBUTE_KEY );
 
                 final LdapUserMapper.Builder ldapUserMapper = LdapUserMapper.create().
                     dn( userDn ).
-                    login( username ).
+                    login( (String) displayNameAttribute.get() ).
                     displayName( displayNameAttribute != null ? (String) displayNameAttribute.get() : null ).
                     email( emailAttribute != null ? (String) emailAttribute.get() : null );
 
