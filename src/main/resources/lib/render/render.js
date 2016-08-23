@@ -25,6 +25,10 @@ exports.generateLoginPage = function (redirectUrl) {
         title: title,
         theme: theme,
         config: config,
-        scriptUrl: scriptUrl
+        scriptUrl: scriptUrl,
+        body: {
+            username: "Username or email",
+            password: "Password"
+        }
     });
 };
