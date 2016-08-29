@@ -71,7 +71,7 @@ public class LdapFindUserHandler
 
                 final LdapUserMapper.Builder ldapUserMapper = LdapUserMapper.create().
                     dn( userDn ).
-                    login( (String) displayNameAttribute.get() ).
+                    login( (String) loginAttribute.get() ).
                     displayName( displayNameAttribute != null ? (String) displayNameAttribute.get() : null ).
                     email( emailAttribute != null ? (String) emailAttribute.get() : null );
 
