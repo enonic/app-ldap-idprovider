@@ -33,10 +33,11 @@ exports.post = function (req) {
     //Finds the LDAP user
     var ldapUser = ldapLib.findUser({
         ldapDialect: idProviderConfig.ldapDialect,
-        ldapAddress: idProviderConfig.ldapAddress,
-        ldapPort: idProviderConfig.ldapPort,
+        serverUrl: idProviderConfig.serverUrl,
         authDn: idProviderConfig.authDn,
         authPassword: idProviderConfig.authPassword,
+        connectTimeout: idProviderConfig.connectTimeout,
+        readTimeout: idProviderConfig.readTimeout,
         userBaseDn: idProviderConfig.userBaseDn,
         username: body.user
     });
@@ -47,10 +48,11 @@ exports.post = function (req) {
         //Authenticates the user
         authenticated = ldapLib.authenticate({
             ldapDialect: idProviderConfig.ldapDialect,
-            ldapAddress: idProviderConfig.ldapAddress,
-            ldapPort: idProviderConfig.ldapPort,
+            serverUrl: idProviderConfig.serverUrl,
             authDn: ldapUser.dn,
-            authPassword: body.password
+            authPassword: body.password,
+            connectTimeout: idProviderConfig.connectTimeout,
+            readTimeout: idProviderConfig.readTimeout
         });
     }
 

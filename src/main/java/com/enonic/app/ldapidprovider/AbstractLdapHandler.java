@@ -22,27 +22,24 @@ public abstract class AbstractLdapHandler
 
     protected LdapDialect ldapDialect;
 
-    protected String ldapAddress;
-
-    protected String ldapPort;
+    protected String serverUrl;
 
     protected String authDn;
 
     protected String authPassword;
+
+    protected long connectTimeout;
+
+    protected long readTimeout;
 
     public void setLdapDialect( String ldapDialect )
     {
         this.ldapDialect = LdapDialectResolver.resolve( ldapDialect );
     }
 
-    public void setLdapAddress( final String ldapAddress )
+    public void setServerUrl( final String serverUrl )
     {
-        this.ldapAddress = ldapAddress;
-    }
-
-    public void setLdapPort( final String ldapPort )
-    {
-        this.ldapPort = ldapPort;
+        this.serverUrl = serverUrl;
     }
 
     public void setAuthDn( final String authDn )
@@ -53,6 +50,16 @@ public abstract class AbstractLdapHandler
     public void setAuthPassword( final String authPassword )
     {
         this.authPassword = authPassword;
+    }
+
+    public void setConnectTimeout( final long connectTimeout )
+    {
+        this.connectTimeout = connectTimeout;
+    }
+
+    public void setReadTimeout( final long readTimeout )
+    {
+        this.readTimeout = readTimeout;
     }
 
     protected DirContext bind()
@@ -77,10 +84,17 @@ public abstract class AbstractLdapHandler
     {
         final Hashtable<String, String> env = new Hashtable<>();
         env.put( Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory" );
-        env.put( Context.PROVIDER_URL, "ldap://" + ldapAddress + ":" + ldapPort );
+        env.put( Context.PROVIDER_URL, serverUrl );
         env.put( Context.SECURITY_AUTHENTICATION, "simple" );
         env.put( Context.SECURITY_PRINCIPAL, authDn );
         env.put( Context.SECURITY_CREDENTIALS, authPassword );
+
+        env.put( "com.sun.jndi.ldap.connect.timeout", "" + connectTimeout );
+        env.put( "com.sun.jndi.ldap.read.timeout", "" + readTimeout );
+        if ( serverUrl != null && serverUrl.toLowerCase().startsWith( "ldaps:" ) )
+        {
+            env.put( Context.SECURITY_PROTOCOL, "ssl" );
+        }
 
         return env;
     }
