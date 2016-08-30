@@ -6,6 +6,7 @@ function handleAuthenticateResponse(loginResult) {
             location.reload();
         }
     } else {
+        enableFormSubmit(true);
         $("#formMessage").removeClass("hidden form-message-info");
         $("#formMessage").addClass("form-message-error");
         $("#message").text("Login Failed!");
@@ -14,6 +15,7 @@ function handleAuthenticateResponse(loginResult) {
 }
 
 function formSubmitted() {
+    enableFormSubmit(false);
     var data = {
         user: $("#inputUsername").val(),
         password: $("#inputPassword").val()
