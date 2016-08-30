@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.naming.NamingEnumeration;
+import javax.naming.PartialResultException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
@@ -95,6 +96,10 @@ public class LdapFindUserHandler
                 return ldapUserMapper.build();
             }
 
+        }
+        catch ( PartialResultException e )
+        {
+            //Ignores PartialResultException
         }
         catch ( Exception e )
         {

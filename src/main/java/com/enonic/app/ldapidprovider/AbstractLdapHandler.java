@@ -10,6 +10,8 @@ import javax.naming.directory.InitialDirContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
+
 import com.enonic.app.ldapidprovider.dialect.LdapDialect;
 import com.enonic.app.ldapidprovider.dialect.LdapDialectResolver;
 import com.enonic.xp.script.bean.BeanContext;
@@ -68,14 +70,14 @@ public abstract class AbstractLdapHandler
         {
             return new InitialDirContext( buildLdapProperties() );
         }
-        catch ( AuthenticationException ae )
+        catch ( AuthenticationException e )
         {
-            LOG.info( "Credentials supplied by the user program are invalid or failed" +
-                          " to authenticate the user to the naming/directory service" );
+            LOG.debug( "Credentials supplied by the user program are invalid or failed" +
+                           " to authenticate the user to the naming/directory service", e );
         }
         catch ( Exception e )
         {
-            LOG.error( "Error occured while authenticating: ", e );
+            LOG.error( "Error occurred while authenticating: ", e );
         }
         return null;
     }
@@ -87,7 +89,7 @@ public abstract class AbstractLdapHandler
         env.put( Context.PROVIDER_URL, serverUrl );
         env.put( Context.SECURITY_AUTHENTICATION, "simple" );
         env.put( Context.SECURITY_PRINCIPAL, authDn );
-        env.put( Context.SECURITY_CREDENTIALS, authPassword );
+        env.put( Context.SECURITY_CREDENTIALS, Strings.emptyToNull( authPassword ) );
 
         env.put( "com.sun.jndi.ldap.connect.timeout", "" + connectTimeout );
         env.put( "com.sun.jndi.ldap.read.timeout", "" + readTimeout );
