@@ -23,41 +23,5 @@ public abstract class LdapDialect
 
     public abstract String getUserObjectClass();
 
-    public abstract String getGroupObjectClass();
-
-    public String getUserSyncAttribute()
-    {
-        return getUserIdAttribute();
-    }
-
     public abstract String getPasswordAttribute();
-
-    public String getGroupSyncAttribute()
-    {
-        return getGroupIdAttribute();
-    }
-
-    public abstract String getGroupIdAttribute();
-
-    public abstract String getGroupMemberAttribute();
-
-    public boolean supportsPaging()
-    {
-        return false;
-    }
-
-    public Object encodePassword(String password )
-    {
-        return password;
-    }
-
-    public boolean changePasswordRequiresSecure()
-    {
-        return false;
-    }
-
-    public String getNameKey()
-    {
-        return "uid";
-    }
 }

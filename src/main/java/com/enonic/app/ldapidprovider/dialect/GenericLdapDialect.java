@@ -23,23 +23,8 @@ public final class GenericLdapDialect
         return "inetOrgPerson";
     }
 
-    public String getGroupObjectClass()
-    {
-        return "groupOfNames";
-    }
-
     public String getPasswordAttribute()
     {
         return "userPassword";
-    }
-
-    public String getGroupIdAttribute()
-    {
-        return "cn";
-    }
-
-    public String getGroupMemberAttribute()
-    {
-        return "member";
     }
 }

@@ -32,6 +32,9 @@ dependencies {
     include "com.enonic.xp:lib-mustache:${xpVersion}"
     include "com.enonic.xp:lib-auth:${xpVersion}"
     include "com.enonic.lib:idproviderdisplay:1.0.0-SNAPSHOT"
+
+    testCompile 'junit:junit:4.12'
+    testCompile "com.enonic.xp:testing:${xpVersion}"
 }
 
 repositories {

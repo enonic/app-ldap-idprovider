@@ -23,33 +23,8 @@ public final class OracleLdapDialect
         return "inetOrgPerson";
     }
 
-    public String getGroupObjectClass()
-    {
-        return "groupOfUniqueNames";
-    }
-
     public String getPasswordAttribute()
     {
         return "userPassword";
-    }
-
-    public String getGroupIdAttribute()
-    {
-        return "cn";
-    }
-
-    public String getGroupMemberAttribute()
-    {
-        return "uniquemember";
-    }
-
-    public boolean supportsPaging()
-    {
-        return false;
-    }
-
-    public boolean changePasswordRequiresSSL()
-    {
-        return false;
     }
 }
