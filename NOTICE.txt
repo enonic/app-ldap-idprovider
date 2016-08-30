@@ -1,0 +1,15 @@
+Licenses used by Simple ID Provider App
+
+    JQuery
+    MIT License
+    https://jquery.org/license/
+    
+Artwork licenses used by this product:
+
+    IcoMoon icons (Ultimate Pack)
+    Need seperate development licenses for developing software using the icons.
+    https://icomoon.io/#icons-icomoon/license
+    
+    Open Sans
+    Apache License 2.0
+    https://fonts.google.com/specimen/Open+Sans
