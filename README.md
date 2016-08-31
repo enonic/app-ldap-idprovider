@@ -1,8 +1,48 @@
 # LDAP ID Provider App for Enonic XP
 
-This app contains an ID Provider displaying a simple login page on 401 errors.
-The user authentication is done against an LDAP server and the user information retrieved locally
+This ID Provider contains a simple login page to authenticate your local users.
+The user authentication is done against an LDAP server and the user information cached locally.
 
+## Usage
+
+### Step 1: Install the application
+1. In the admin tool "Applications" of your Enonic XP installation, click on "Install". 
+2. Select the tab "Enonic Market", find "LDAP ID Provider", and click on the link "Install".
+
+### Step 2: Create and configure the user store
+1. In the admin tool "Users", click on "New".
+2. Fill in the fields and, for the field "ID Provider", select the application "LDAP ID Provider".
+3. Configure the ID Provider:
+    * LDAP Server: Server information
+        * LDAP Dialect: Type of the LDAP server
+        * LDAP server URL: URL of the LDAP server
+        * Auth DN: DN of an admin user. (Used to search for users)
+        * Auth password: Password of the admin user. (Used to search for users)
+        * LDAP user base DN: DN of the element containing the users.
+        * Connect timeout: Connect timeout (milliseconds)
+        * Read timeout: Connect timeout (milliseconds)
+    * (Optional) Groups: Groups to associate to new users    
+    * Display
+        * Title: Title used by the login page
+        * Theme: Display theme of the login page
+            
+### Step 3: Create and configure the user store
+1. Edit the configuration file "com.enonic.xp.web.vhost.cfg", and set the new user store to your virtual host.
+(See [Virtual Host Configuration](http://xp.readthedocs.io/en/stable/operations/configuration.html#configuration-vhost) for more information).
+
+    ```ini
+    enabled=true
+      
+    mapping.admin.host = localhost
+    mapping.admin.source = /admin
+    mapping.admin.target = /admin
+    mapping.admin.userStore = system
+    
+    mapping.mysite.host = localhost
+    mapping.mysite.source = /
+    mapping.mysite.target = /portal/master/mysite
+    mapping.mysite.userStore = myuserstore
+    ```
 
 ## Releases and Compatibility
 
