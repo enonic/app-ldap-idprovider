@@ -49,6 +49,7 @@ The user authentication is done against an LDAP server and the user information 
 | App version | Required XP version | Download |
 | ----------- | ------------------- | -------- |
 | 1.0.0 | 6.7.0 | [Download](http://repo.enonic.com/public/com/enonic/app/ldapidprovider/1.0.0/ldapidprovider-1.0.0.jar) |
+| 1.0.1 | 6.7.0 | [Download](http://repo.enonic.com/public/com/enonic/app/ldapidprovider/1.0.1/ldapidprovider-1.0.1.jar) |
 
 
 ## Building and deploying
