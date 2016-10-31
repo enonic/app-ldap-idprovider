@@ -95,17 +95,22 @@ public class LdapFindUserHandler
 
                 return ldapUserMapper.build();
             }
-
+            else
+            {
+                LOG.debug( "No user found for context [" + userBaseDn + "] and filter [" + filter + "]." );
+            }
         }
         catch ( PartialResultException e )
         {
             //Ignores PartialResultException
+            LOG.debug(
+                "Partial result error occurred while searching for user with context [" + userBaseDn + "] and filter [" + filter + "]: ",
+                e );
         }
         catch ( Exception e )
         {
-            LOG.error( "Error occured while searching for user:", e );
+            LOG.error( "Error occurred while searching for user with context [" + userBaseDn + "] and filter [" + filter + "]: ", e );
         }
-
         return null;
     }
 

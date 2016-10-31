@@ -72,12 +72,11 @@ public abstract class AbstractLdapHandler
         }
         catch ( AuthenticationException e )
         {
-            LOG.debug( "Credentials supplied by the user program are invalid or failed" +
-                           " to authenticate the user to the naming/directory service", e );
+            LOG.debug( "Authentication error occurred while authenticating user [" + authDn + "]: ", e );
         }
         catch ( Exception e )
         {
-            LOG.error( "Error occurred while authenticating: ", e );
+            LOG.error( "Error occurred while authenticating user [" + authDn + "]: : ", e );
         }
         return null;
     }
