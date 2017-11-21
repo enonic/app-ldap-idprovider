@@ -1,27 +1,15 @@
-buildscript {
-    repositories {
-        mavenLocal()
-        jcenter()
-        maven {
-            url 'http://repo.enonic.com/public'
-        }
-    }
-
-    dependencies {
-        classpath "com.enonic.xp:gradle-plugin:${xpVersion}"
-    }
+plugins {
+    id 'maven'
+    id 'com.enonic.defaults' version '1.0.3'
+    id 'com.enonic.xp.app' version '1.0.13'
 }
 
-apply plugin: 'maven'
-apply plugin: 'com.enonic.xp.app'
-
 app {
-    name = project.appName
-    displayName = project.displayName
+    name = 'com.enonic.app.ldapidprovider'
+    displayName = 'LDAP ID Provider'
     vendorName = 'Enonic AS'
     vendorUrl = 'http://enonic.com'
 }
-
 dependencies {
     compile "com.enonic.xp:core-api:${xpVersion}"
     compile "com.enonic.xp:portal-api:${xpVersion}"
@@ -39,16 +27,7 @@ dependencies {
 
 repositories {
     mavenLocal()
+    mavenCentral()
     jcenter()
-    maven {
-        url 'http://repo.enonic.com/public'
-    }
-}
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            repository( url: 'http://repo.enonic.net/artifactory/public' )
-        }
-    }
+    xp.enonicRepo()
 }
