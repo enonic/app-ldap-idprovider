@@ -70,4 +70,4 @@ var mock = {
     }
 };
 
-__.registerMock('/site/lib/xp/portal.js', mock);
+__.registerMock('/lib/xp/portal.js', mock);

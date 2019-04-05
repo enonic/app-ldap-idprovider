@@ -1,7 +1,7 @@
 plugins {
-    id 'maven'
-    id 'com.enonic.defaults' version '1.0.3'
-    id 'com.enonic.xp.app' version '1.0.13'
+    id 'com.enonic.defaults' version '2.0.1'
+    id 'com.enonic.xp.app' version '2.0.0'
+    id 'maven-publish'
 }
 
 app {
@@ -9,6 +9,7 @@ app {
     displayName = 'LDAP ID Provider'
     vendorName = 'Enonic AS'
     vendorUrl = 'http://enonic.com'
+    systemVersion = "${xpVersion}"
 }
 dependencies {
     compile "com.enonic.xp:core-api:${xpVersion}"
@@ -16,12 +17,13 @@ dependencies {
     include "com.enonic.xp:lib-content:${xpVersion}"
     include "com.enonic.xp:lib-context:${xpVersion}"
     include "com.enonic.xp:lib-portal:${xpVersion}"
-    include "com.enonic.xp:lib-thymeleaf:${xpVersion}"
-    include "com.enonic.xp:lib-mustache:${xpVersion}"
+    include "com.enonic.lib:lib-thymeleaf:2.0.0-B1"
+    include "com.enonic.lib:lib-mustache:2.0.0-B1"
     include "com.enonic.xp:lib-auth:${xpVersion}"
-    include "com.enonic.lib:idproviderdisplay:1.0.0"
+    include "com.enonic.lib:lib-idproviderdisplay:2.0.0-B1"
 
     testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:+'
     testCompile "com.enonic.xp:testing:${xpVersion}"
 }
 

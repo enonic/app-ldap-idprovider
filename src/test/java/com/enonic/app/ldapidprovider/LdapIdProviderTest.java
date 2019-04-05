@@ -1,6 +1,6 @@
 package com.enonic.app.ldapidprovider;
 
-import com.enonic.xp.testing.script.ScriptRunnerSupport;
+import com.enonic.xp.testing.ScriptRunnerSupport;
 
 public class LdapIdProviderTest
     extends ScriptRunnerSupport
