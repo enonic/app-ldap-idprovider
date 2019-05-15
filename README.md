@@ -36,12 +36,12 @@ The user authentication is done against an LDAP server and the user information 
     mapping.admin.host = localhost
     mapping.admin.source = /admin
     mapping.admin.target = /admin
-    mapping.admin.userStore = system
+    mapping.admin.idProvider.system = default
     
     mapping.mysite.host = localhost
     mapping.mysite.source = /
     mapping.mysite.target = /portal/master/mysite
-    mapping.mysite.userStore = myuserstore
+    mapping.mysite.idProvider.myidprovider = default
     ```
 
 ## Releases and Compatibility
@@ -51,6 +51,7 @@ The user authentication is done against an LDAP server and the user information 
 | 1.0.0 | 6.7.0 | [Download](http://repo.enonic.com/public/com/enonic/app/ldapidprovider/1.0.0/ldapidprovider-1.0.0.jar) |
 | 1.0.1 | 6.7.0 | [Download](http://repo.enonic.com/public/com/enonic/app/ldapidprovider/1.0.1/ldapidprovider-1.0.1.jar) |
 | 1.0.2 | 6.7.0 | [Download](http://repo.enonic.com/public/com/enonic/app/ldapidprovider/1.0.2/ldapidprovider-1.0.2.jar) |
+| 2.0.0 | 7.0.0 | [Download](http://repo.enonic.com/public/com/enonic/app/ldapidprovider/2.0.0/ldapidprovider-2.0.0.jar) |
 
 
 ## Building and deploying
