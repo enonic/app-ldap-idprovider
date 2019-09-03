@@ -23,4 +23,4 @@ exports.mockUser = function (json) {
     userJson = json;
 };
 
-__.registerMock('/site/lib/xp/auth.js', mock);
+__.registerMock('/lib/xp/auth.js', mock);

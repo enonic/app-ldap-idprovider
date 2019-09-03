@@ -60,9 +60,9 @@ exports.post = function (req) {
     if (authenticated) {
 
         //Searches for the user in the user store
-        var userStoreKey = portalLib.getUserStoreKey();
+        var idProviderKey = portalLib.getIdProviderKey();
         var user = runAsAdmin(function () {
-            return authLib.getPrincipal("user:" + userStoreKey + ":" + ldapUser.login);
+            return authLib.getPrincipal("user:" + idProviderKey + ":" + ldapUser.login);
         });
 
         //If the user already exist in the user store
@@ -85,7 +85,7 @@ exports.post = function (req) {
             //Else, creates the user
             runAsAdmin(function () {
                 user = authLib.createUser({
-                    userStore: userStoreKey,
+                    idProvider: idProviderKey,
                     name: ldapUser.login,
                     displayName: ldapUser.displayName || ldapUser.login,
                     email: ldapUser.email
@@ -116,7 +116,7 @@ exports.post = function (req) {
         //Logs the user in
         var loginResult = authLib.login({
             user: user.login,
-            userStore: userStoreKey,
+            idProvider: idProviderKey,
             skipAuth: true
         });
 
@@ -166,7 +166,7 @@ function runAsAdmin(callback) {
     return contextLib.run({
         user: {
             login: 'su',
-            userStore: 'system'
+            idProvider: 'system'
         },
         principals: ["role:system.admin"]
     }, callback);
