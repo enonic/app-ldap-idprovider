@@ -1,4 +1,5 @@
 var authLib = require('/lib/xp/auth');
+var commonLib = require('/lib/xp/common');
 var contextLib = require('/lib/xp/context');
 var portalLib = require('/lib/xp/portal');
 var renderLib = require('/lib/render/render');
@@ -61,7 +62,7 @@ exports.post = function (req) {
 
         //Searches for the user in the user store
         var idProviderKey = portalLib.getIdProviderKey();
-        var user = runAsAdmin(function () {
+        var user = runAsAdmin(() => {
             return authLib.getPrincipal("user:" + idProviderKey + ":" + ldapUser.login);
         });
 
@@ -69,7 +70,7 @@ exports.post = function (req) {
         if (user) {
 
             //Updates the display name and email address 
-            runAsAdmin(function () {
+            runAsAdmin(() => {
                 user = authLib.modifyUser({
                     key: user.key,
                     editor: function (u) {
@@ -83,7 +84,7 @@ exports.post = function (req) {
         } else {
 
             //Else, creates the user
-            runAsAdmin(function () {
+            runAsAdmin(() => {
                 user = authLib.createUser({
                     idProvider: idProviderKey,
                     name: ldapUser.login,
@@ -99,7 +100,7 @@ exports.post = function (req) {
         }
 
         //Updates the user attributes
-        runAsAdmin(function () {
+        runAsAdmin(() => {
             if (!ldapUser.attributes.dn) {
                 ldapUser.attributes.dn = ldapUser.dn;
             }
@@ -112,6 +113,17 @@ exports.post = function (req) {
                 }
             });
         });
+
+        //Creates of update groups based on DN
+        if (idProviderConfig.createFromDn) {
+            const dn = ldapUser.dn;
+            runAsAdmin(() => {
+                const group = getClosestGroupFromDn(dn, idProviderKey);
+                if (group) {
+                    authLib.addMembers(group.key, [user.key]);
+                }
+            });
+        }
 
         //Logs the user in
         var loginResult = authLib.login({
@@ -134,6 +146,49 @@ exports.post = function (req) {
         contentType: 'application/json'
     };
 };
+
+function getClosestGroupFromDn(dn, idProviderKey) {
+    const currentRdnArray = [];
+    const reverseOuValueArray = [];
+    let lastGroup = null;
+    dn.split(',').reverse().forEach((rdn) => {
+        log.info('rdn:' + rdn);
+        currentRdnArray.unshift(rdn);
+        const rdnValues = rdn.split('=', 2);
+        if ('ou' === rdnValues[0].toLowerCase()) {
+            reverseOuValueArray.push(rdnValues[1]);
+            const currentDn = currentRdnArray.join(',');
+            const groupName = commonLib.sanitize(currentDn);
+            const groupKey = 'group:' + idProviderKey + ':' + groupName;
+            let group = authLib.getPrincipal(groupKey);
+            if (group) {
+                // Unnecessary for now
+
+                // authLib.modifyGroup({
+                //     key: group.key,
+                //     editor: (g) => {
+                //         g.displayName = reverseOuValueArray.join('/');
+                //         g.description = 'currentDn';
+                //         return g;
+                //     }
+                // });
+            } else {
+                group = authLib.createGroup({
+                    idProvider: idProviderKey,
+                    name: groupName,
+                    displayName: reverseOuValueArray.join('/'),
+                    description: currentDn
+                });
+            }
+
+            if (lastGroup) {
+                authLib.addMembers(lastGroup.key, [group.key]);
+            }
+            lastGroup = group;
+        }
+    });
+    return lastGroup;
+}
 
 exports.login = function (req) {
     var redirectUrl = (req.validTicket && req.params.redirect) || generateRedirectUrl();

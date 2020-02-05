@@ -53,6 +53,11 @@
     <field-set>
       <label>Groups</label>
       <items>
+        <input name="createFromDn" type="CheckBox">
+          <label>Create and update groups from DN</label>
+          <help-text>Create and update groups based on the distinguished name value</help-text>
+          <occurrences minimum="0" maximum="1"/>
+        </input>
         <input name="defaultGroups" type="PrincipalSelector">
           <label>Groups</label>
           <occurrences minimum="0" maximum="0"/>
