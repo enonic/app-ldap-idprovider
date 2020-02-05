@@ -21,7 +21,9 @@ The user authentication is done against an LDAP server and the user information 
         * LDAP user base DN: DN of the element containing the users.
         * Connect timeout: Connect timeout (milliseconds)
         * Read timeout: Connect timeout (milliseconds)
-    * (Optional) Groups: Groups to associate to new users    
+    * Groups
+        * Create groups from DN: Create groups based on the Organizational Units from the Distinguished Name   
+        * Groups: Groups to associate to new users 
     * Display
         * Title: Title used by the login page
         * Theme: Display theme of the login page

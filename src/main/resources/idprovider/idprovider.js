@@ -152,7 +152,6 @@ function getClosestGroupFromDn(dn, idProviderKey) {
     const reverseOuValueArray = [];
     let lastGroup = null;
     dn.split(',').reverse().forEach((rdn) => {
-        log.info('rdn:' + rdn);
         currentRdnArray.unshift(rdn);
         const rdnValues = rdn.split('=', 2);
         if ('ou' === rdnValues[0].toLowerCase()) {

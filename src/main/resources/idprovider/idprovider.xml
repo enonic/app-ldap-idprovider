@@ -54,8 +54,8 @@
       <label>Groups</label>
       <items>
         <input name="createFromDn" type="CheckBox">
-          <label>Create and update groups from DN</label>
-          <help-text>Create and update groups based on the distinguished name value</help-text>
+          <label>Create groups from DN</label>
+          <help-text>Create groups based on the Organizational Units from the Distinguished Name</help-text>
           <occurrences minimum="0" maximum="1"/>
         </input>
         <input name="defaultGroups" type="PrincipalSelector">
