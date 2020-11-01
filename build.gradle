@@ -21,7 +21,7 @@ dependencies {
     include "com.enonic.lib:lib-mustache:2.0.0"
     include "com.enonic.lib:lib-idproviderdisplay:2.0.0"
 
-    testCompile 'junit:junit:4.12'
+    testCompile 'junit:junit:4.13.1'
     testCompile "com.enonic.xp:testing:${xpVersion}"
 }
 
