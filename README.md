@@ -30,7 +30,7 @@ The user authentication is done against an LDAP server and the user information 
             
 ### Step 3: Create and configure the user store
 1. Edit the configuration file "com.enonic.xp.web.vhost.cfg", and set the new user store to your virtual host.
-(See [Virtual Host Configuration](http://xp.readthedocs.io/en/stable/operations/configuration.html#configuration-vhost) for more information).
+(See [Virtual Host Configuration](https://developer.enonic.com/docs/xp/stable/deployment/config#vhost) for more information).
 
     ```ini
     enabled=true
@@ -48,13 +48,14 @@ The user authentication is done against an LDAP server and the user information 
 
 ## Releases and Compatibility
 
-| App version | Required XP version | Download |
-| ----------- | ------------------- | -------- |
-| 2.1.0 | 7.0.0 | [Download](http://repo.enonic.com/public/com/enonic/app/ldapidprovider/2.1.0/ldapidprovider-2.1.0.jar) |
-| 2.0.0 | 7.0.0 | [Download](http://repo.enonic.com/public/com/enonic/app/ldapidprovider/2.0.0/ldapidprovider-2.0.0.jar) |
-| 1.0.2 | 6.7.0 | [Download](http://repo.enonic.com/public/com/enonic/app/ldapidprovider/1.0.2/ldapidprovider-1.0.2.jar) |
-| 1.0.1 | 6.7.0 | [Download](http://repo.enonic.com/public/com/enonic/app/ldapidprovider/1.0.1/ldapidprovider-1.0.1.jar) |
-| 1.0.0 | 6.7.0 | [Download](http://repo.enonic.com/public/com/enonic/app/ldapidprovider/1.0.0/ldapidprovider-1.0.0.jar) |
+| App version | Required XP version | Download                                                                                               |
+|-------------|---------------------|--------------------------------------------------------------------------------------------------------|
+| 2.1.1       | 7.7.4               | [Download](http://repo.enonic.com/public/com/enonic/app/ldapidprovider/2.1.1/ldapidprovider-2.1.1.jar) |
+| 2.1.0       | 7.0.0               | [Download](http://repo.enonic.com/public/com/enonic/app/ldapidprovider/2.1.0/ldapidprovider-2.1.0.jar) |
+| 2.0.0       | 7.0.0               | [Download](http://repo.enonic.com/public/com/enonic/app/ldapidprovider/2.0.0/ldapidprovider-2.0.0.jar) |
+| 1.0.2       | 6.7.0               | [Download](http://repo.enonic.com/public/com/enonic/app/ldapidprovider/1.0.2/ldapidprovider-1.0.2.jar) |
+| 1.0.1       | 6.7.0               | [Download](http://repo.enonic.com/public/com/enonic/app/ldapidprovider/1.0.1/ldapidprovider-1.0.1.jar) |
+| 1.0.0       | 6.7.0               | [Download](http://repo.enonic.com/public/com/enonic/app/ldapidprovider/1.0.0/ldapidprovider-1.0.0.jar) |
 
 
 ## Building and deploying
