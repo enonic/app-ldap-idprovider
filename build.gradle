@@ -12,8 +12,8 @@ app {
     systemVersion = "${xpVersion}"
 }
 dependencies {
-    compile "com.enonic.xp:core-api:${xpVersion}"
-    compile "com.enonic.xp:portal-api:${xpVersion}"
+    implementation "com.enonic.xp:core-api:${xpVersion}"
+    implementation "com.enonic.xp:portal-api:${xpVersion}"
     include "com.enonic.xp:lib-content:${xpVersion}"
     include "com.enonic.xp:lib-context:${xpVersion}"
     include "com.enonic.xp:lib-portal:${xpVersion}"
@@ -21,13 +21,12 @@ dependencies {
     include "com.enonic.lib:lib-mustache:2.0.0"
     include "com.enonic.lib:lib-idproviderdisplay:2.0.0"
 
-    testCompile 'junit:junit:4.13.2'
-    testCompile "com.enonic.xp:testing:${xpVersion}"
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation "com.enonic.xp:testing:${xpVersion}"
 }
 
 repositories {
     mavenLocal()
     mavenCentral()
-    jcenter()
     xp.enonicRepo()
 }
