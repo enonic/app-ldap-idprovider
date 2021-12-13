@@ -1,7 +1,7 @@
 plugins {
     id 'maven'
-    id 'com.enonic.defaults' version '1.0.3'
-    id 'com.enonic.xp.app' version '1.0.13'
+    id 'com.enonic.defaults' version '2.0.1'
+    id 'com.enonic.xp.app' version '1.1.0'
 }
 
 app {
@@ -9,6 +9,7 @@ app {
     displayName = 'LDAP ID Provider'
     vendorName = 'Enonic AS'
     vendorUrl = 'http://enonic.com'
+    systemVersion = "${version}"
 }
 dependencies {
     compile "com.enonic.xp:core-api:${xpVersion}"
@@ -28,6 +29,5 @@ dependencies {
 repositories {
     mavenLocal()
     mavenCentral()
-    jcenter()
     xp.enonicRepo()
 }
