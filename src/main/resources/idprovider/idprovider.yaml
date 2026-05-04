@@ -1,0 +1,112 @@
+kind: "IdProvider"
+mode: "MIXED"
+form:
+  - type: "FieldSet"
+    label: "LDAP Server"
+    items:
+      - type: "ComboBox"
+        name: "ldapDialect"
+        label: "Ldap Dialect"
+        indexed: true
+        occurrences:
+          min: 1
+          max: 1
+        options:
+          - value: "ad"
+            label: "Active Directory"
+          - value: "generic"
+            label: "Generic"
+          - value: "oracle"
+            label: "Oracle"
+        default: "generic"
+      - type: "TextLine"
+        name: "serverUrl"
+        label: "LDAP server url"
+        occurrences:
+          min: 1
+          max: 1
+        default: "ldap://127.0.0.1:389"
+      - type: "TextLine"
+        name: "authDn"
+        label: "Auth DN"
+        occurrences:
+          min: 1
+          max: 1
+        default: "cn=Manager,dc=my-domain,dc=com"
+      - type: "TextLine"
+        name: "authPassword"
+        label: "Auth password"
+        occurrences:
+          min: 1
+          max: 1
+        default: "secret"
+      - type: "TextLine"
+        name: "userBaseDn"
+        label: "LDAP user base DN"
+        occurrences:
+          min: 1
+          max: 1
+        default: "dc=my-domain,dc=com"
+      - type: "Long"
+        name: "connectTimeout"
+        label: "Connect timeout (ms)"
+        occurrences:
+          min: 1
+          max: 1
+        default: "60000"
+      - type: "Long"
+        name: "readTimeout"
+        label: "Read timeout (ms)"
+        occurrences:
+          min: 1
+          max: 1
+        default: "60000"
+
+  - type: "FieldSet"
+    label: "Groups"
+    items:
+      - type: "CheckBox"
+        name: "createFromDn"
+        label: "Create groups from DN"
+        helpText: "Create groups based on the Organizational Units from the Distinguished Name"
+        occurrences:
+          min: 0
+          max: 1
+      - type: "PrincipalSelector"
+        name: "defaultGroups"
+        label: "Groups"
+        occurrences:
+          min: 0
+          max: 0
+        principalType: "GROUP"
+
+  - type: "FieldSet"
+    label: "Display"
+    items:
+      - type: "TextLine"
+        name: "title"
+        label: "Title"
+        occurrences:
+          min: 0
+          max: 1
+        default: "LDAP Login"
+      - type: "ComboBox"
+        name: "theme"
+        label: "Theme"
+        occurrences:
+          min: 0
+          max: 1
+        options:
+          - value: "light-blue"
+            label: "Light Blue"
+          - value: "light-green"
+            label: "Light Green"
+          - value: "light-red"
+            label: "Light Red"
+          - value: "dark-blue"
+            label: "Dark Blue"
+          - value: "dark-green"
+            label: "Dark Green"
+          - value: "dark-red"
+            label: "Dark Red"
+        default: "light-blue"
