@@ -1,25 +1,20 @@
 plugins {
     id 'maven-publish'
     id 'com.enonic.defaults' version '2.1.6'
-    id 'com.enonic.xp.app' version '3.6.2'
+    id 'com.enonic.xp.app'
 }
 
-app {
-    name = 'com.enonic.app.ldapidprovider'
-    displayName = 'LDAP ID Provider'
-    vendorName = 'Enonic AS'
-    vendorUrl = 'http://enonic.com'
-    systemVersion = "${xpVersion}"
-}
 dependencies {
-    implementation "com.enonic.xp:core-api:${xpVersion}"
-    implementation "com.enonic.xp:portal-api:${xpVersion}"
-    include "com.enonic.xp:lib-content:${xpVersion}"
-    include "com.enonic.xp:lib-context:${xpVersion}"
-    include "com.enonic.xp:lib-portal:${xpVersion}"
-    include "com.enonic.xp:lib-auth:${xpVersion}"
-    include "com.enonic.lib:lib-mustache:2.1.1"
-    include "com.enonic.lib:lib-idproviderdisplay:2.0.0"
+    implementation xplibs.api.core
+    implementation xplibs.api.portal
+    include xplibs.content
+    include xplibs.context
+    include xplibs.portal
+    include xplibs.auth
+    include libs.lib.mustache
+    include( libs.lib.idproviderdisplay ) {
+        exclude group: 'com.enonic.xp', module: 'lib-portal'
+    }
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation "com.enonic.xp:testing:${xpVersion}"

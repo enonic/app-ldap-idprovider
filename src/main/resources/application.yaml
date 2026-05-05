@@ -1,0 +1,5 @@
+kind: "Application"
+title: "LDAP ID Provider"
+description: "Add LDAP authentication to your Enonic XP installation"
+vendorName: "Enonic AS"
+vendorUrl: "http://enonic.com"
