@@ -2,6 +2,7 @@ var authLib = require('/lib/xp/auth');
 var commonLib = require('/lib/xp/common');
 var contextLib = require('/lib/xp/context');
 var portalLib = require('/lib/xp/portal');
+var configLib = require('/lib/config');
 var renderLib = require('/lib/render/render');
 var ldapLib = require('/lib/ldap');
 
@@ -29,7 +30,7 @@ exports.post = function (req) {
     var body = JSON.parse(req.body);
 
     //Authenticates against the LDAP server
-    var idProviderConfig = authLib.getIdProviderConfig();
+    var idProviderConfig = configLib.getIdProviderConfig();
 
     //Finds the LDAP user
     var ldapUser = ldapLib.findUser({
