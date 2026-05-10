@@ -1,5 +1,6 @@
 package com.enonic.app.ldapidprovider;
 
+import java.util.Base64;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -87,7 +88,7 @@ public class LdapFindUserHandler
                         List<Object> attributeValueList = new LinkedList<>();
                         while ( attributeValueEnumeration.hasMore() )
                         {
-                            attributeValueList.add( attributeValueEnumeration.next() ); //TODO
+                            attributeValueList.add( toSerializableAttributeValue( attributeValueEnumeration.next() ) );
                         }
                         ldapUserMapper.addAttribute( attribute.getID(), attributeValueList );
                     }
@@ -142,5 +143,15 @@ public class LdapFindUserHandler
             }
         }
         return sb.toString();
+    }
+
+    static Object toSerializableAttributeValue( final Object value )
+    {
+        if ( value instanceof byte[] )
+        {
+            return Base64.getEncoder().encodeToString( (byte[]) value );
+        }
+
+        return value;
     }
 }
