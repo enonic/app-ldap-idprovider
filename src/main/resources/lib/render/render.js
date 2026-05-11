@@ -1,12 +1,13 @@
 var authLib = require('/lib/xp/auth');
 var portalLib = require('/lib/xp/portal');
 var mustacheLib = require('/lib/mustache');
+var configLib = require('/lib/config');
 var displayLib = require('/lib/display');
 
 exports.generateLoginPage = function (redirectUrl) {
 
     //Retrieves title and theme
-    var idProviderConfig = authLib.getIdProviderConfig();
+    var idProviderConfig = configLib.getIdProviderConfig();
     var title = idProviderConfig.title || "LDAP Login";
     var theme = idProviderConfig.theme || "light-blue";
 
