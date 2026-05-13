@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{{title}}</title>
+
+    <link href="{{assetUrl}}/css/style.css" rel="stylesheet">
+    <link href="{{backgroundStyleUrl}}" rel="stylesheet">
+    <link href="{{colorStyleUrl}}" rel="stylesheet">
+    <script src="{{assetUrl}}/js/jquery-2.2.0.min.js"></script>
+    {{#body.reCaptcha}}
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+    <script>
+        function reCaptchaDataCallback() {
+            enableFormSubmit(true);
+        }
+    </script>
+    {{/body.reCaptcha}}
+
+    {{{config}}}
+
+    <style>
+
+        @font-face {
+            font-family: 'Open Sans';
+            src: url("{{assetUrl}}/fonts/opensans-regular.eot");
+            src: url("{{assetUrl}}/fonts/opensans-regular.eot?#iefix") format("embedded-opentype"),
+            url("{{assetUrl}}/fonts/opensans-regular.woff") format("woff"),
+            url("{{assetUrl}}/fonts/opensans-regular.ttf") format("truetype"),
+            url("{{assetUrl}}/fonts/opensans-regular.svg#open_sansregular") format("svg");
+            font-weight: normal;
+            font-style: normal;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+
+    {{#profileUrl}}
+    <img class="form-user-profile" src="{{profileUrl}}">
+    {{/profileUrl}}
+    <div class="form-user-image">
+        <img class="form-user-image-svg" src="{{assetUrl}}/img/user.svg">
+    </div>
+
+
+    <form id="userLogin" class="form" method="POST">
+        <div class="form-head">
+            <span class="form-title">{{title}}</span>
+            {{#subheader}}
+            <span class="form-subheader">{{subheader}}</span>
+            {{/subheader}}
+        </div>
+
+        <div id="formMessage" class="form-message {{messageClass}}">
+            <span id="message" class="form-message-text">{{message}}</span>
+        </div>
+
+        {{#body}}
+        <div class="form-body" id="login">
+
+            {{#body.username}}
+            <div class="form-input">
+                <div class="form-input-img">
+                    <img class="form-input-img-svg" src="{{assetUrl}}/img/envelop.svg">
+                </div>
+                <input type="text" id="inputUsername" class="form-input-elem" placeholder="{{body.username}}" required autofocus>
+            </div>
+            {{/body.username}}
+
+            {{#body.password}}
+            <div class="form-input">
+                <div class="form-input-img">
+                    <img class="form-input-img-svg" src="{{assetUrl}}/img/lock.svg">
+                </div>
+                <input type="password" id="inputPassword" class="form-input-elem" placeholder="{{body.password}}" required>
+            </div>
+            {{/body.password}}
+
+            {{#body.code}}
+            <div class="form-input">
+                <div class="form-input-img">
+                    <img class="form-input-img-svg" src="{{assetUrl}}/img/lock.svg">
+                </div>
+                <input type="text" id="inputCode" class="form-input-elem" placeholder="{{body.code}}" required autofocus>
+            </div>
+            {{/body.code}}
+
+            {{#body.confirmation}}
+            <div class="form-input">
+                <div class="form-input-img">
+                    <img class="form-input-img-svg" src="{{assetUrl}}/img/lock.svg">
+                </div>
+                <input type="password" id="inputConfirmation" class="form-input-elem" placeholder="{{body.confirmation}}" required>
+            </div>
+            {{/body.confirmation}}
+
+            {{#body.reCaptcha}}
+            <div class="g-recaptcha" data-sitekey="{{body.reCaptcha}}" data-callback="reCaptchaDataCallback">
+            </div>
+            {{/body.reCaptcha}}
+
+            {{#body.forgotPasswordUrl}}
+            <a class="form-forgot-pwd-link" href="{{body.forgotPasswordUrl}}">Forgot your password?</a>
+            {{/body.forgotPasswordUrl}}
+        </div>
+        {{/body}}
+
+        <button id="formSubmit" type="submit" class="form-foot">
+            <span class="form-foot-text">{{submit}}</span>
+        </button>
+    </form>
+    
+</div>
+
+<script src="{{scriptUrl}}"></script>
+<script>
+    const loginForm = document.getElementById("userLogin");
+    
+    loginForm.addEventListener("submit", function (event) {
+        formSubmitted();
+        event.preventDefault();
+    });
+
+    function enableFormSubmit(enabled) {
+        $("#formSubmit").prop('disabled', !enabled);
+    }
+</script>
+
+{{#body.reCaptcha}}
+<script>
+    enableFormSubmit(false);
+</script>
+{{/body.reCaptcha}}
+
+
+</body>
+</html>
