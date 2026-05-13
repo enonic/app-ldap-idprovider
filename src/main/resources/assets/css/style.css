@@ -1,0 +1,220 @@
+/***************************************************
+** Generic settings
+****************************************************/
+
+body {
+    margin: 0;
+}
+
+html, body, .container {
+    height: 100%
+}
+
+input, button, div {
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+button {
+    border: none;
+}
+
+a {
+    text-decoration: none;
+}
+
+/***************************************************
+** Font & color settings
+****************************************************/
+
+body, input, button {
+    font-family: 'Roboto', 'Open Sans', arial, sans-serif;
+}
+
+.form-title {
+    font-weight: 400;
+    font-size: 30px;
+    line-height: 1.1;
+}
+
+body {
+    font-size: 14px;
+}
+
+.form-message-error {
+    background-color: #d9534f;
+    color: #fff;
+}
+
+.form-message-info {
+    background-color: #5cb85c;
+    color: #fff;
+}
+
+.form-input > input {
+    border: none;
+    font-size: 14px;
+}
+
+.form-foot-text {
+    color: #fff;
+    border: 1px solid #fff;
+    border-radius: 2px;
+}
+
+.form-forgot-pwd-link {
+    font-size: 13px;
+}
+
+.form-input-img {
+    background-color: #f2f2f2;
+}
+
+.form-input {
+    border: 1px solid #e6e6e6;
+}
+
+.form-title, a {
+    color: #404040;
+}
+
+.form {
+    background-color: #fff;
+    box-shadow: 0 0 2px rgba(17, 17, 24, .6);
+}
+
+.form-user-image {
+    box-shadow: 0 0 2px rgba(17, 17, 24, .6);
+}
+
+.form-foot[disabled], .form-foot[disabled]:hover {
+    background-color: #e0e0e0;
+    cursor: default;
+}
+
+/***************************************************
+** Positioning settings
+****************************************************/
+
+.container, .container div, .container form, .form-foot {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container * {
+    flex-shrink: 0;
+}
+
+.container, .form-user-image, .form-body {
+    flex-direction: column;
+}
+
+.form-title {
+    margin: 10px 0 15px 0;
+}
+
+.form-subheader {
+    padding-bottom: 15px;
+}
+
+.form-user-image {
+    width: 96px;
+    height: 96px;
+    border: none;
+    border-radius: 48px;
+    z-index: 1;
+}
+
+.form-user-image-svg {
+    width: 64px;
+    height: 64px;
+}
+
+.form-user-profile {
+    width: 96px;
+    height: 96px;
+    position: relative;
+    top: 96px;
+    border-radius: 48px;
+    z-index: 2;
+}
+
+.form {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    top: -62px;
+    border-radius: 4px;
+}
+
+.form-head {
+    padding-top: 62px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    flex-direction: column;
+}
+
+.form-head, .form-message, .form-foot {
+    text-align: center;
+    width: 100%;
+}
+
+.form-title, .form-message-text {
+    width: 100%;
+}
+
+.form-body {
+    margin: 20px 0;
+}
+
+.form-input > input, .form-input-img, .form-forgot-pwd-link, .form-message {
+    padding: 10px;
+}
+
+.form-input-elem {
+    width: 210px;
+}
+
+.form-input {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.form-input-img-svg {
+    width: 20px;
+    height: 20px;
+}
+
+.form-text {
+    margin-top: 0;
+}
+
+.form-foot {
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    cursor: pointer;
+}
+
+.form-foot-text {
+    margin: 10px 0;
+    padding: 5px 20px;
+}
+
+.g-recaptcha {
+    transform: scale(0.83);
+}
+
+.rc-anchor-light {
+    background: #f2f2f2;
+}
+
+/***************************************************
+** Dynamic settings
+****************************************************/
+
+.hidden {
+    display: none !important;
+}

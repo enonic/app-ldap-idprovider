@@ -1,7 +1,5 @@
 [versions]
 mustache            = "2.1.1"
-idproviderdisplay   = "2.0.0"
 
 [libraries]
 lib-mustache          = { module = "com.enonic.lib:lib-mustache",          version.ref = "mustache" }
-lib-idproviderdisplay = { module = "com.enonic.lib:lib-idproviderdisplay", version.ref = "idproviderdisplay" }

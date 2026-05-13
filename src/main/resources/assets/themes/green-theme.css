@@ -1,0 +1,7 @@
+.form-user-image, .form-foot {
+    background-color: #5cb85c;
+}
+
+.form-foot:hover {
+    background-color: #449d44;
+}
