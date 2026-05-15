@@ -1,5 +1,5 @@
 [versions]
-mustache            = "2.1.1"
+mustache            = "3.0.0-SNAPSHOT"
 
 [libraries]
 lib-mustache          = { module = "com.enonic.lib:lib-mustache",          version.ref = "mustache" }
