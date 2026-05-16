@@ -75,6 +75,7 @@ form:
       - type: "PrincipalSelector"
         name: "defaultGroups"
         label: "Groups"
+        helpText: "Users created on first LDAP login will be added to the selected group(s)."
         occurrences:
           min: 0
           max: 0
