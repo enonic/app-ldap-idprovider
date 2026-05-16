@@ -5,6 +5,8 @@ var appConfigMock = require('/lib/mock/appConfig');
 var idProvider = require('/idprovider/idprovider');
 var assert = require('/lib/xp/testing');
 
+authMock.setIdProviderConfig({title: "User Login Test"});
+
 exports.testHandle401 = function () {
     var result = idProvider.handle401({});
 

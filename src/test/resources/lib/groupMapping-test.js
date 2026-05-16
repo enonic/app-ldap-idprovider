@@ -1,7 +1,6 @@
 var assert = require('/lib/xp/testing');
-var groupMappingLib = require('/lib/groupMapping');
 
-// Mock auth library
+// Mock auth library (registered before requiring /lib/groupMapping so the lib picks up the mock)
 var addMembersResults = [];
 var authMock = {
     addMembers: function(groupKey, userKeys) {
@@ -9,6 +8,8 @@ var authMock = {
     }
 };
 __.registerMock('/lib/xp/auth.js', authMock);
+
+var groupMappingLib = require('/lib/groupMapping');
 
 exports.testMatchesLdapGroupByName = function() {
     addMembersResults = [];

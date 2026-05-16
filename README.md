@@ -3,128 +3,160 @@
 This ID Provider contains a simple login page to authenticate your local users.
 The user authentication is done against an LDAP server and the user information cached locally.
 
-## Usage
+## Configuration
 
-### Step 1: Install the application
-1. In the admin tool "Applications" of your Enonic XP installation, click on "Install". 
-2. Select the tab "Enonic Market", find "LDAP ID Provider", and click on the link "Install".
+The LDAP ID Provider is configured entirely outside of the admin UI — there is no
+form to fill in. There are two complementary input sources:
 
-### Step 2: Create and configure the user store
-1. In the admin tool "Users", click on "New".
-2. Fill in the fields and, for the field "ID Provider", select the application "LDAP ID Provider".
-3. Configure the ID Provider:
-    * LDAP Server: Server information
-        * LDAP Dialect: Type of the LDAP server
-        * LDAP server URL: URL of the LDAP server
-        * Auth DN: DN of an admin user. (Used to search for users)
-        * Auth password: Password of the admin user. (Used to search for users)
-        * LDAP user base DN: DN of the element containing the users.
-        * Connect timeout: Connect timeout (milliseconds)
-        * Read timeout: Connect timeout (milliseconds)
-    * Groups
-        * Create groups from DN: Create groups based on the Organizational Units from the Distinguished Name
-        * Groups: Groups to associate to new users
-        * Group Mappings: Map LDAP groups to XP groups or roles
-            * Source Type: Choose how to identify LDAP groups (by name or full DN)
-            * Source Value: LDAP group name (e.g., 'Domain Admins') or full DN
-            * Target Group/Role: XP group or role to assign users to
-    * Display
-        * Title: Title used by the login page
-        * Theme: Display theme of the login page
-            
-### Step 3: Create and configure the user store
-1. Edit the configuration file "com.enonic.xp.web.vhost.cfg", and set the new user store to your virtual host.
-(See [Virtual Host Configuration](https://developer.enonic.com/docs/xp/stable/deployment/config#vhost) for more information).
+1. **`IdProviderConfig.config`** — the structured `config` object passed in when
+   the id provider is created via `auth.createIdProvider(...)`. Best for
+   per-id-provider settings (multiple LDAP providers on the same XP, each
+   pointing at a different directory).
+2. **`<app>.cfg`** — the application's config file
+   (`home/config/com.enonic.app.ldapidprovider.cfg`), keyed by id provider name.
+   Best for shared defaults or for configuring providers from outside JS.
 
-    ```ini
-    enabled=true
-      
-    mapping.admin.host = localhost
-    mapping.admin.source = /admin
-    mapping.admin.target = /admin
-    mapping.admin.idProvider.system = default
-    
-    mapping.mysite.host = localhost
-    mapping.mysite.source = /
-    mapping.mysite.target = /portal/master/mysite
-    mapping.mysite.idProvider.myidprovider = default
-    ```
+When both are set, values from `IdProviderConfig.config` win on a per-key basis,
+falling back to the cfg file and then to library defaults.
 
-## Group Mappings
+### Supported keys
 
-The LDAP ID Provider supports mapping LDAP group memberships to XP groups or roles. This allows you to automatically assign users to XP groups based on their LDAP/Active Directory group memberships.
+| Key             | Type              | Default               | Description                                                                |
+|-----------------|-------------------|-----------------------|----------------------------------------------------------------------------|
+| `ldapDialect`   | `ad` / `generic` / `oracle` | `generic`   | LDAP server flavor                                                         |
+| `serverUrl`     | string            | `ldap://127.0.0.1:389` | LDAP server URL                                                           |
+| `authDn`        | string            | `""`                  | DN of an admin user used to search for users                               |
+| `authPassword`  | string            | `""`                  | Password of the admin user                                                 |
+| `userBaseDn`    | string            | `""`                  | DN of the element containing the users                                     |
+| `connectTimeout`| long (ms)         | `60000`               | Connect timeout                                                            |
+| `readTimeout`   | long (ms)         | `60000`               | Read timeout                                                               |
+| `createFromDn`  | boolean           | `false`               | Create groups based on Organizational Units from the user's DN             |
+| `defaultGroups` | array of principal keys | `[]`            | Groups to add new users to on first login                                  |
+| `groupMappings` | array of mapping objects | `[]`           | Map LDAP group memberships to XP groups or roles — see below               |
+| `title`         | string            | `LDAP Login`          | Title of the login page                                                    |
+| `theme`         | string            | `light-blue`          | Theme of the login page                                                    |
 
-### Configuration via Admin UI
+### Configure via `auth.createIdProvider` (recommended)
 
-In the ID Provider configuration form, you can add multiple group mappings:
+```javascript
+var authLib = require('/lib/xp/auth');
 
-1. **Source Type**: Choose how to identify LDAP groups:
-   - `LDAP Group Name (memberOf)`: Match by group name (CN) extracted from the group DN
-   - `LDAP Group DN (full distinguished name)`: Match by the full DN of the LDAP group
+authLib.createIdProvider({
+    name: 'myldap',
+    displayName: 'My LDAP',
+    idProviderConfig: {
+        applicationKey: 'com.enonic.app.ldapidprovider',
+        config: {
+            ldapDialect: 'ad',
+            serverUrl: 'ldap://127.0.0.1:389',
+            authDn: 'cn=Manager,dc=my-domain,dc=com',
+            authPassword: 'secret',
+            userBaseDn: 'dc=my-domain,dc=com',
+            connectTimeout: 60000,
+            readTimeout: 60000,
+            createFromDn: false,
+            defaultGroups: ['group:myldap:users'],
+            groupMappings: [
+                {source: 'ldapGroup', sourceValue: 'Domain Admins', target: 'role:system.admin'},
+                {source: 'ldapGroupDn', sourceValue: 'cn=Developers,ou=Groups,dc=example,dc=com', target: 'group:myldap:developers'}
+            ],
+            title: 'LDAP Login',
+            theme: 'light-blue'
+        }
+    }
+});
+```
 
-2. **Source Value**: The LDAP group to match:
-   - For group name: `Domain Admins`, `Developers`, `IT Staff`
-   - For full DN: `cn=Developers,ou=Groups,dc=example,dc=com`
+### Configure via `com.enonic.app.ldapidprovider.cfg`
 
-3. **Target Group/Role**: The XP group or role to assign users to:
-   - Groups: `group:myldap:developers`, `group:system:users`
-   - Roles: `role:system.admin`, `role:cms.admin`
-
-### Configuration via File
-
-You can also configure group mappings via the `com.enonic.app.ldapidprovider.cfg` file:
+Place keys under `idprovider.<idProviderName>.<field>` so the same cfg file can
+hold settings for several id providers:
 
 ```ini
-# Map "Domain Admins" LDAP group to system admin role
+idprovider.myldap.ldapDialect=ad
+idprovider.myldap.serverUrl=ldap://127.0.0.1:389
+idprovider.myldap.authDn=cn=Manager,dc=my-domain,dc=com
+idprovider.myldap.authPassword=secret
+idprovider.myldap.userBaseDn=dc=my-domain,dc=com
+idprovider.myldap.connectTimeout=60000
+idprovider.myldap.readTimeout=60000
+idprovider.myldap.createFromDn=false
+idprovider.myldap.defaultGroups=group:myldap:admins group:myldap:users
 idprovider.myldap.groupMappings.0.source=ldapGroup
 idprovider.myldap.groupMappings.0.sourceValue=Domain Admins
 idprovider.myldap.groupMappings.0.target=role:system.admin
-
-# Map Developers group (by DN) to developers group
 idprovider.myldap.groupMappings.1.source=ldapGroupDn
 idprovider.myldap.groupMappings.1.sourceValue=cn=Developers,ou=Groups,dc=example,dc=com
 idprovider.myldap.groupMappings.1.target=group:myldap:developers
-
-# Map IT Staff group to content managers
-idprovider.myldap.groupMappings.2.source=ldapGroup
-idprovider.myldap.groupMappings.2.sourceValue=IT Staff
-idprovider.myldap.groupMappings.2.target=role:cms.cm.app
+idprovider.myldap.title=LDAP Login
+idprovider.myldap.theme=light-blue
 ```
 
-### How Group Mappings Work
+`defaultGroups` is a space-separated list of principal keys. Group mappings use
+the indexed-key shape (`groupMappings.<N>.source` etc.).
 
-1. When a user logs in, the ID Provider queries LDAP for the user's group memberships (via the `memberOf` attribute)
-2. Each configured mapping rule is evaluated to check if the user belongs to the specified LDAP group
-3. If a match is found, the user is automatically added to the target XP group or role
-4. This process happens on every login, ensuring group memberships stay synchronized
+### Virtual host mapping
 
-### Group Mapping Features
+Map the id provider into a virtual host as usual
+(see [Virtual Host Configuration](https://developer.enonic.com/docs/xp/stable/deployment/config#vhost)):
 
-- **Multiple Mappings**: Configure as many mappings as needed
-- **Flexible Matching**: Match by group name or full DN
-- **Role Support**: Map to both groups and roles
-- **Automatic Synchronization**: Group memberships are updated on every login
-- **Backwards Compatible**: Works alongside existing features (default groups, DN-based groups)
+```ini
+enabled=true
 
-### Example Scenarios
+mapping.admin.host = localhost
+mapping.admin.source = /admin
+mapping.admin.target = /admin
+mapping.admin.idProvider.system = default
 
-**Scenario 1: Map AD security groups to XP roles**
-```
-Source: ldapGroup → "Domain Admins"
-Target: role:system.admin
-
-Source: ldapGroup → "Content Editors"
-Target: role:cms.cm.app
+mapping.mysite.host = localhost
+mapping.mysite.source = /
+mapping.mysite.target = /portal/master/mysite
+mapping.mysite.idProvider.myldap = default
 ```
 
-**Scenario 2: Map specific LDAP groups to custom XP groups**
-```
-Source: ldapGroupDn → "cn=ProjectA-Team,ou=Projects,dc=company,dc=com"
-Target: group:myldap:project-a
+## Group Mappings
 
-Source: ldapGroupDn → "cn=ProjectB-Team,ou=Projects,dc=company,dc=com"
-Target: group:myldap:project-b
+The LDAP ID Provider supports mapping LDAP group memberships to XP groups or
+roles. On every login, the provider queries the user's LDAP group memberships
+(via the `memberOf` attribute) and adds them to the matching XP groups or roles.
+
+### Mapping shape
+
+Each mapping is an object with three fields:
+
+- `source` — `"ldapGroup"` to match by group name (CN extracted from the group
+  DN), or `"ldapGroupDn"` to match by full DN.
+- `sourceValue` — the LDAP group name (e.g. `Domain Admins`) or full DN
+  (e.g. `cn=Developers,ou=Groups,dc=example,dc=com`). Matching is
+  case-insensitive.
+- `target` — XP principal key, either a group (`group:<idprovider>:<name>`) or
+  role (`role:<name>`).
+
+### Examples
+
+**Map AD security groups to XP roles**
+
+```javascript
+groupMappings: [
+    {source: 'ldapGroup', sourceValue: 'Domain Admins', target: 'role:system.admin'},
+    {source: 'ldapGroup', sourceValue: 'Content Editors', target: 'role:cms.cm.app'}
+]
 ```
+
+**Map specific LDAP groups (by DN) to custom XP groups**
+
+```javascript
+groupMappings: [
+    {source: 'ldapGroupDn', sourceValue: 'cn=ProjectA-Team,ou=Projects,dc=company,dc=com', target: 'group:myldap:project-a'},
+    {source: 'ldapGroupDn', sourceValue: 'cn=ProjectB-Team,ou=Projects,dc=company,dc=com', target: 'group:myldap:project-b'}
+]
+```
+
+### Behavior
+
+- Multiple mappings are evaluated for every login; all matches are applied.
+- Users are never automatically removed from groups; mappings only add.
+- Mappings work alongside `defaultGroups` and `createFromDn`.
 
 ## Releases and Compatibility
 

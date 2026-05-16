@@ -2,87 +2,122 @@ var authLib = require('/lib/xp/auth');
 var portalLib = require('/lib/xp/portal');
 var appConfigLib = require('/lib/appConfig');
 
-// Config file format (in com.enonic.app.ldapidprovider.cfg):
+// Configuration is sourced (in priority order) from:
 //
-//   idprovider.<idProviderName>.<field>=<value>
+//  1. IdProviderConfig.config — the structured config passed to
+//     auth.createIdProvider({ idProviderConfig: { applicationKey, config: {...} } }).
+//     Used for per-id-provider settings; available at runtime via authLib.getIdProviderConfig().
 //
-// Example for an id provider named "myldap":
+//  2. app.config — the application's .cfg file (com.enonic.app.ldapidprovider.cfg),
+//     keyed by id provider name:
 //
-//   idprovider.myldap.ldapDialect=ad
-//   idprovider.myldap.serverUrl=ldap://127.0.0.1:389
-//   idprovider.myldap.authDn=cn=Manager,dc=my-domain,dc=com
-//   idprovider.myldap.authPassword=secret
-//   idprovider.myldap.userBaseDn=dc=my-domain,dc=com
-//   idprovider.myldap.connectTimeout=60000
-//   idprovider.myldap.readTimeout=60000
-//   idprovider.myldap.createFromDn=false
-//   idprovider.myldap.defaultGroups=group:myldap:admins group:myldap:users
-//   idprovider.myldap.groupMappings.0.source=ldapGroup
-//   idprovider.myldap.groupMappings.0.sourceValue=Domain Admins
-//   idprovider.myldap.groupMappings.0.target=role:system.admin
-//   idprovider.myldap.groupMappings.1.source=ldapGroupDn
-//   idprovider.myldap.groupMappings.1.sourceValue=cn=Developers,ou=Groups,dc=example,dc=com
-//   idprovider.myldap.groupMappings.1.target=group:myldap:developers
-//   idprovider.myldap.title=LDAP Login
-//   idprovider.myldap.theme=light-blue
+//       idprovider.<idProviderName>.<field>=<value>
+//
+//     Example for an id provider named "myldap":
+//
+//       idprovider.myldap.ldapDialect=ad
+//       idprovider.myldap.serverUrl=ldap://127.0.0.1:389
+//       idprovider.myldap.authDn=cn=Manager,dc=my-domain,dc=com
+//       idprovider.myldap.authPassword=secret
+//       idprovider.myldap.userBaseDn=dc=my-domain,dc=com
+//       idprovider.myldap.connectTimeout=60000
+//       idprovider.myldap.readTimeout=60000
+//       idprovider.myldap.createFromDn=false
+//       idprovider.myldap.defaultGroups=group:myldap:admins group:myldap:users
+//       idprovider.myldap.groupMappings.0.source=ldapGroup
+//       idprovider.myldap.groupMappings.0.sourceValue=Domain Admins
+//       idprovider.myldap.groupMappings.0.target=role:system.admin
+//       idprovider.myldap.title=LDAP Login
+//       idprovider.myldap.theme=light-blue
 
 var CONFIG_NAMESPACE = 'idprovider';
 
 exports.getIdProviderConfig = function () {
     var idProviderName = portalLib.getIdProviderKey();
     var idProviderKeyBase = CONFIG_NAMESPACE + '.' + idProviderName;
+    var appConfig = appConfigLib.getConfig() || {};
+    var providerConfig = authLib.getIdProviderConfig() || {};
 
-    var appConfig = appConfigLib.getConfig();
-
-    var hasFileConfig = Object.keys(appConfig).some(function (key) {
-        return key.indexOf(idProviderKeyBase + '.') === 0;
-    });
-
-    if (hasFileConfig) {
-        return getConfigFromFile(appConfig, idProviderKeyBase);
-    }
-
-    return authLib.getIdProviderConfig();
+    return {
+        ldapDialect: stringValue(providerConfig.ldapDialect, appConfig[idProviderKeyBase + '.ldapDialect'], 'generic'),
+        serverUrl: stringValue(providerConfig.serverUrl, appConfig[idProviderKeyBase + '.serverUrl'], 'ldap://127.0.0.1:389'),
+        authDn: stringValue(providerConfig.authDn, appConfig[idProviderKeyBase + '.authDn'], ''),
+        authPassword: stringValue(providerConfig.authPassword, appConfig[idProviderKeyBase + '.authPassword'], ''),
+        connectTimeout: longValue(providerConfig.connectTimeout, appConfig[idProviderKeyBase + '.connectTimeout'], 60000),
+        readTimeout: longValue(providerConfig.readTimeout, appConfig[idProviderKeyBase + '.readTimeout'], 60000),
+        userBaseDn: stringValue(providerConfig.userBaseDn, appConfig[idProviderKeyBase + '.userBaseDn'], ''),
+        createFromDn: booleanValue(providerConfig.createFromDn, appConfig[idProviderKeyBase + '.createFromDn'], false),
+        defaultGroups: stringArrayValue(providerConfig.defaultGroups, appConfig[idProviderKeyBase + '.defaultGroups']),
+        groupMappings: groupMappingsValue(providerConfig.groupMappings, appConfig, idProviderKeyBase + '.groupMappings'),
+        title: stringValue(providerConfig.title, appConfig[idProviderKeyBase + '.title'], 'LDAP Login'),
+        theme: stringValue(providerConfig.theme, appConfig[idProviderKeyBase + '.theme'], 'light-blue')
+    };
 };
 
-function getConfigFromFile(appConfig, idProviderKeyBase) {
-    return {
-        ldapDialect: appConfig[idProviderKeyBase + '.ldapDialect'] || 'generic',
-        serverUrl: appConfig[idProviderKeyBase + '.serverUrl'] || 'ldap://127.0.0.1:389',
-        authDn: appConfig[idProviderKeyBase + '.authDn'] || '',
-        authPassword: appConfig[idProviderKeyBase + '.authPassword'] || '',
-        connectTimeout: parseLong(appConfig[idProviderKeyBase + '.connectTimeout'], 60000),
-        readTimeout: parseLong(appConfig[idProviderKeyBase + '.readTimeout'], 60000),
-        userBaseDn: appConfig[idProviderKeyBase + '.userBaseDn'] || '',
-        createFromDn: appConfig[idProviderKeyBase + '.createFromDn'] === 'true',
-        defaultGroups: parseStringArray(appConfig[idProviderKeyBase + '.defaultGroups']),
-        groupMappings: parseGroupMappings(appConfig, idProviderKeyBase),
-        title: appConfig[idProviderKeyBase + '.title'] || 'LDAP Login',
-        theme: appConfig[idProviderKeyBase + '.theme'] || 'light-blue'
-    };
-}
-
-function parseLong(value, defaultValue) {
-    if (value === undefined || value === null) {
-        return defaultValue;
+function stringValue(providerValue, fileValue, defaultValue) {
+    if (providerValue !== undefined && providerValue !== null && providerValue !== '') {
+        return String(providerValue);
     }
-    var parsed = parseInt(value, 10);
-    return isNaN(parsed) ? defaultValue : parsed;
-}
-
-function parseStringArray(value) {
-    if (!value) {
-        return [];
+    if (fileValue !== undefined && fileValue !== null && fileValue !== '') {
+        return String(fileValue);
     }
-    return value.split(' ').filter(function (v) { return !!v; });
+    return defaultValue;
 }
 
-function parseGroupMappings(appConfig, idProviderKeyBase) {
+function longValue(providerValue, fileValue, defaultValue) {
+    var parsed = parseInt(providerValue, 10);
+    if (!isNaN(parsed)) {
+        return parsed;
+    }
+    parsed = parseInt(fileValue, 10);
+    if (!isNaN(parsed)) {
+        return parsed;
+    }
+    return defaultValue;
+}
+
+function booleanValue(providerValue, fileValue, defaultValue) {
+    if (providerValue === true || providerValue === false) {
+        return providerValue;
+    }
+    if (typeof providerValue === 'string' && providerValue !== '') {
+        return providerValue === 'true';
+    }
+    if (fileValue !== undefined && fileValue !== null && fileValue !== '') {
+        return fileValue === 'true';
+    }
+    return defaultValue;
+}
+
+function stringArrayValue(providerValue, fileValue) {
+    if (providerValue) {
+        if (providerValue.constructor === Array) {
+            return providerValue;
+        }
+        return [providerValue];
+    }
+    if (fileValue) {
+        return fileValue.split(' ').filter(function (v) { return !!v; });
+    }
+    return [];
+}
+
+function groupMappingsValue(providerValue, appConfig, fileKeyBase) {
+    if (providerValue) {
+        var arr = (providerValue.constructor === Array) ? providerValue : [providerValue];
+        return arr.map(function (m) {
+            return {
+                source: m.source,
+                sourceValue: m.sourceValue,
+                target: m.target
+            };
+        });
+    }
+
     var mappings = [];
-    var prefix = idProviderKeyBase + '.groupMappings.';
+    var prefix = fileKeyBase + '.';
     var index = 0;
 
-    // Parse mappings from file config: idprovider.name.groupMappings.0.source, etc.
     while (true) {
         var sourceKey = prefix + index + '.source';
         var sourceValueKey = prefix + index + '.sourceValue';
