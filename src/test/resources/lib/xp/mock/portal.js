@@ -13,6 +13,10 @@ var mock = {
         return createUrl('asset', params);
     },
 
+    apiUrl: function (params) {
+        return createUrl('api', params);
+    },
+
     imageUrl: function (params) {
         return createUrl('image', params);
     },

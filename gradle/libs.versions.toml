@@ -1,5 +1,7 @@
 [versions]
 mustache            = "3.0.0-SNAPSHOT"
+static              = "3.0.0-SNAPSHOT"
 
 [libraries]
 lib-mustache          = { module = "com.enonic.lib:lib-mustache",          version.ref = "mustache" }
+lib-static            = { module = "com.enonic.lib:lib-static",            version.ref = "static" }

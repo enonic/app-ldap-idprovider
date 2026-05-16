@@ -12,6 +12,7 @@ dependencies {
     include xplibs.portal
     include xplibs.auth
     include libs.lib.mustache
+    include libs.lib.static
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation "com.enonic.xp:testing:${xpVersion}"

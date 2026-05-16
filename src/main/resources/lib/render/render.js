@@ -19,7 +19,7 @@ exports.generateLoginPage = function (redirectUrl) {
     });
 
     //Generates script URL
-    var scriptUrl = portalLib.assetUrl({path: "js/login.js"});
+    var scriptUrl = portalLib.apiUrl({api: 'asset', path: "js/login.js"});
 
     //Renders the login page
     return displayLib.render({
