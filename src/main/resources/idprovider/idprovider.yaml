@@ -77,7 +77,7 @@ form:
         label: "Groups"
         occurrences:
           min: 0
-          max: 0
+          max: 999
         principalType: "GROUP"
 
   - type: "FieldSet"
