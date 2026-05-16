@@ -79,6 +79,42 @@ form:
           min: 0
           max: 0
         principalType: "GROUP"
+      - type: "ItemSet"
+        name: "groupMappings"
+        label: "Group Mappings"
+        helpText: "Map LDAP groups to XP groups or roles. Users will be automatically added to target groups based on their LDAP group membership."
+        occurrences:
+          min: 0
+          max: 0
+        items:
+          - type: "ComboBox"
+            name: "source"
+            label: "Source Type"
+            helpText: "Choose how to identify LDAP groups"
+            occurrences:
+              min: 1
+              max: 1
+            options:
+              - value: "ldapGroup"
+                label: "LDAP Group Name (memberOf)"
+              - value: "ldapGroupDn"
+                label: "LDAP Group DN (full distinguished name)"
+            default: "ldapGroup"
+          - type: "TextLine"
+            name: "sourceValue"
+            label: "Source Value"
+            helpText: "LDAP group name (e.g., 'Domain Admins') or full DN (e.g., 'cn=Developers,ou=Groups,dc=example,dc=com')"
+            occurrences:
+              min: 1
+              max: 1
+          - type: "PrincipalSelector"
+            name: "target"
+            label: "Target Group/Role"
+            helpText: "XP group or role to assign users to when they match the source"
+            occurrences:
+              min: 1
+              max: 1
+            principalType: "GROUP,ROLE"
 
   - type: "FieldSet"
     label: "Display"

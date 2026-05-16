@@ -22,8 +22,12 @@ The user authentication is done against an LDAP server and the user information 
         * Connect timeout: Connect timeout (milliseconds)
         * Read timeout: Connect timeout (milliseconds)
     * Groups
-        * Create groups from DN: Create groups based on the Organizational Units from the Distinguished Name   
-        * Groups: Groups to associate to new users 
+        * Create groups from DN: Create groups based on the Organizational Units from the Distinguished Name
+        * Groups: Groups to associate to new users
+        * Group Mappings: Map LDAP groups to XP groups or roles
+            * Source Type: Choose how to identify LDAP groups (by name or full DN)
+            * Source Value: LDAP group name (e.g., 'Domain Admins') or full DN
+            * Target Group/Role: XP group or role to assign users to
     * Display
         * Title: Title used by the login page
         * Theme: Display theme of the login page
@@ -45,6 +49,82 @@ The user authentication is done against an LDAP server and the user information 
     mapping.mysite.target = /portal/master/mysite
     mapping.mysite.idProvider.myidprovider = default
     ```
+
+## Group Mappings
+
+The LDAP ID Provider supports mapping LDAP group memberships to XP groups or roles. This allows you to automatically assign users to XP groups based on their LDAP/Active Directory group memberships.
+
+### Configuration via Admin UI
+
+In the ID Provider configuration form, you can add multiple group mappings:
+
+1. **Source Type**: Choose how to identify LDAP groups:
+   - `LDAP Group Name (memberOf)`: Match by group name (CN) extracted from the group DN
+   - `LDAP Group DN (full distinguished name)`: Match by the full DN of the LDAP group
+
+2. **Source Value**: The LDAP group to match:
+   - For group name: `Domain Admins`, `Developers`, `IT Staff`
+   - For full DN: `cn=Developers,ou=Groups,dc=example,dc=com`
+
+3. **Target Group/Role**: The XP group or role to assign users to:
+   - Groups: `group:myldap:developers`, `group:system:users`
+   - Roles: `role:system.admin`, `role:cms.admin`
+
+### Configuration via File
+
+You can also configure group mappings via the `com.enonic.app.ldapidprovider.cfg` file:
+
+```ini
+# Map "Domain Admins" LDAP group to system admin role
+idprovider.myldap.groupMappings.0.source=ldapGroup
+idprovider.myldap.groupMappings.0.sourceValue=Domain Admins
+idprovider.myldap.groupMappings.0.target=role:system.admin
+
+# Map Developers group (by DN) to developers group
+idprovider.myldap.groupMappings.1.source=ldapGroupDn
+idprovider.myldap.groupMappings.1.sourceValue=cn=Developers,ou=Groups,dc=example,dc=com
+idprovider.myldap.groupMappings.1.target=group:myldap:developers
+
+# Map IT Staff group to content managers
+idprovider.myldap.groupMappings.2.source=ldapGroup
+idprovider.myldap.groupMappings.2.sourceValue=IT Staff
+idprovider.myldap.groupMappings.2.target=role:cms.cm.app
+```
+
+### How Group Mappings Work
+
+1. When a user logs in, the ID Provider queries LDAP for the user's group memberships (via the `memberOf` attribute)
+2. Each configured mapping rule is evaluated to check if the user belongs to the specified LDAP group
+3. If a match is found, the user is automatically added to the target XP group or role
+4. This process happens on every login, ensuring group memberships stay synchronized
+
+### Group Mapping Features
+
+- **Multiple Mappings**: Configure as many mappings as needed
+- **Flexible Matching**: Match by group name or full DN
+- **Role Support**: Map to both groups and roles
+- **Automatic Synchronization**: Group memberships are updated on every login
+- **Backwards Compatible**: Works alongside existing features (default groups, DN-based groups)
+
+### Example Scenarios
+
+**Scenario 1: Map AD security groups to XP roles**
+```
+Source: ldapGroup → "Domain Admins"
+Target: role:system.admin
+
+Source: ldapGroup → "Content Editors"
+Target: role:cms.cm.app
+```
+
+**Scenario 2: Map specific LDAP groups to custom XP groups**
+```
+Source: ldapGroupDn → "cn=ProjectA-Team,ou=Projects,dc=company,dc=com"
+Target: group:myldap:project-a
+
+Source: ldapGroupDn → "cn=ProjectB-Team,ou=Projects,dc=company,dc=com"
+Target: group:myldap:project-b
+```
 
 ## Releases and Compatibility
 

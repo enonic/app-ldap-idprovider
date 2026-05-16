@@ -5,6 +5,7 @@ var portalLib = require('/lib/xp/portal');
 var configLib = require('/lib/config');
 var renderLib = require('/lib/render/render');
 var ldapLib = require('/lib/ldap');
+var groupMappingLib = require('/lib/groupMapping');
 
 exports.handle401 = function (req) {
     var body = renderLib.generateLoginPage();
@@ -114,6 +115,35 @@ exports.post = function (req) {
                 }
             });
         });
+
+        //Process group mappings
+        if (idProviderConfig.groupMappings && idProviderConfig.groupMappings.length > 0) {
+            runAsAdmin(() => {
+                try {
+                    // Get user's LDAP groups
+                    var ldapGroups = ldapLib.findGroups({
+                        ldapDialect: idProviderConfig.ldapDialect,
+                        serverUrl: idProviderConfig.serverUrl,
+                        authDn: idProviderConfig.authDn,
+                        authPassword: idProviderConfig.authPassword,
+                        connectTimeout: idProviderConfig.connectTimeout,
+                        readTimeout: idProviderConfig.readTimeout,
+                        userDn: ldapUser.dn
+                    });
+
+                    // Process mappings
+                    groupMappingLib.processMappings(
+                        ldapUser,
+                        ldapGroups,
+                        idProviderConfig,
+                        user,
+                        idProviderKey
+                    );
+                } catch (e) {
+                    log.error('Error processing group mappings for user [' + user.key + ']: ' + e);
+                }
+            });
+        }
 
         //Creates of update groups based on DN
         if (idProviderConfig.createFromDn) {

@@ -17,6 +17,12 @@ var appConfigLib = require('/lib/appConfig');
 //   idprovider.myldap.readTimeout=60000
 //   idprovider.myldap.createFromDn=false
 //   idprovider.myldap.defaultGroups=group:myldap:admins group:myldap:users
+//   idprovider.myldap.groupMappings.0.source=ldapGroup
+//   idprovider.myldap.groupMappings.0.sourceValue=Domain Admins
+//   idprovider.myldap.groupMappings.0.target=role:system.admin
+//   idprovider.myldap.groupMappings.1.source=ldapGroupDn
+//   idprovider.myldap.groupMappings.1.sourceValue=cn=Developers,ou=Groups,dc=example,dc=com
+//   idprovider.myldap.groupMappings.1.target=group:myldap:developers
 //   idprovider.myldap.title=LDAP Login
 //   idprovider.myldap.theme=light-blue
 
@@ -50,6 +56,7 @@ function getConfigFromFile(appConfig, idProviderKeyBase) {
         userBaseDn: appConfig[idProviderKeyBase + '.userBaseDn'] || '',
         createFromDn: appConfig[idProviderKeyBase + '.createFromDn'] === 'true',
         defaultGroups: parseStringArray(appConfig[idProviderKeyBase + '.defaultGroups']),
+        groupMappings: parseGroupMappings(appConfig, idProviderKeyBase),
         title: appConfig[idProviderKeyBase + '.title'] || 'LDAP Login',
         theme: appConfig[idProviderKeyBase + '.theme'] || 'light-blue'
     };
@@ -68,4 +75,31 @@ function parseStringArray(value) {
         return [];
     }
     return value.split(' ').filter(function (v) { return !!v; });
+}
+
+function parseGroupMappings(appConfig, idProviderKeyBase) {
+    var mappings = [];
+    var prefix = idProviderKeyBase + '.groupMappings.';
+    var index = 0;
+
+    // Parse mappings from file config: idprovider.name.groupMappings.0.source, etc.
+    while (true) {
+        var sourceKey = prefix + index + '.source';
+        var sourceValueKey = prefix + index + '.sourceValue';
+        var targetKey = prefix + index + '.target';
+
+        if (!appConfig[sourceKey]) {
+            break;
+        }
+
+        mappings.push({
+            source: appConfig[sourceKey],
+            sourceValue: appConfig[sourceValueKey],
+            target: appConfig[targetKey]
+        });
+
+        index++;
+    }
+
+    return mappings;
 }
