@@ -4,7 +4,7 @@ var mustacheLib = require('/lib/mustache');
 var configLib = require('/lib/config');
 var displayLib = require('/lib/display');
 
-exports.generateLoginPage = function (redirectUrl) {
+exports.generateLoginPage = function (req, redirectUrl) {
 
     //Retrieves title and theme
     var idProviderConfig = configLib.getIdProviderConfig();
@@ -19,10 +19,10 @@ exports.generateLoginPage = function (redirectUrl) {
     });
 
     //Generates script URL
-    var scriptUrl = portalLib.assetUrl({path: "js/login.js"});
+    var scriptUrl = portalLib.idProviderUrl() + '/_static/js/login.js';
 
     //Renders the login page
-    return displayLib.render({
+    return displayLib.render(req, {
         title: title,
         theme: theme,
         config: config,
