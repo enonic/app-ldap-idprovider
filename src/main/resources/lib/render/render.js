@@ -19,7 +19,7 @@ exports.generateLoginPage = function (req, redirectUrl) {
     });
 
     //Generates script URL
-    var scriptUrl = req.contextPath + '/_static/js/login.js';
+    var scriptUrl = portalLib.idProviderUrl() + '/_static/js/login.js';
 
     //Renders the login page
     return displayLib.render(req, {

@@ -1,4 +1,5 @@
 var mustacheLib = require('/lib/mustache');
+var portalLib = require('/lib/xp/portal');
 
 exports.render = function (req, params) {
     params.submit = params.submit || "LOG IN";
@@ -14,20 +15,20 @@ exports.render = function (req, params) {
         params.message = "";
     }
 
-    params.assetUrl = req.contextPath + '/_static';
-    params.backgroundStyleUrl = generateBackgroundStyleUrl(req, params.theme);
-    params.colorStyleUrl = generateColorStyleUrl(req, params.theme);
+    params.assetUrl = portalLib.idProviderUrl() + '/_static';
+    params.backgroundStyleUrl = generateBackgroundStyleUrl(params.theme);
+    params.colorStyleUrl = generateColorStyleUrl(params.theme);
 
     var view = resolve('page.html');
     return mustacheLib.render(view, params);
 };
 
-function generateBackgroundStyleUrl(req, theme) {
+function generateBackgroundStyleUrl(theme) {
     var stylePath = "themes/" + theme.split('-', 1)[0] + "-theme.css";
-    return req.contextPath + '/_static/' + stylePath;
+    return portalLib.idProviderUrl() + '/_static/' + stylePath;
 }
 
-function generateColorStyleUrl(req, theme) {
+function generateColorStyleUrl(theme) {
     var stylePath = "themes/" + theme.split('-', 2)[1] + "-theme.css";
-    return req.contextPath + '/_static/' + stylePath;
+    return portalLib.idProviderUrl() + '/_static/' + stylePath;
 }
