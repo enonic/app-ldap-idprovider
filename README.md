@@ -6,18 +6,10 @@ The user authentication is done against an LDAP server and the user information 
 ## Configuration
 
 The LDAP ID Provider is configured entirely outside of the admin UI — there is no
-form to fill in. There are two complementary input sources:
-
-1. **`IdProviderConfig.config`** — the structured `config` object passed in when
-   the id provider is created via `auth.createIdProvider(...)`. Best for
-   per-id-provider settings (multiple LDAP providers on the same XP, each
-   pointing at a different directory).
-2. **`<app>.cfg`** — the application's config file
-   (`home/config/com.enonic.app.ldapidprovider.cfg`), keyed by id provider name.
-   Best for shared defaults or for configuring providers from outside JS.
-
-When both are set, values from `IdProviderConfig.config` win on a per-key basis,
-falling back to the cfg file and then to library defaults.
+form to fill in. All settings come from the structured `config` object passed in
+when the id provider is created via `auth.createIdProvider(...)`. This is the
+same pattern as `app-adfs-idprovider`: one input path, read at runtime via
+`auth.getIdProviderConfig()`.
 
 ### Supported keys
 
@@ -36,7 +28,7 @@ falling back to the cfg file and then to library defaults.
 | `title`         | string            | `LDAP Login`          | Title of the login page                                                    |
 | `theme`         | string            | `light-blue`          | Theme of the login page                                                    |
 
-### Configure via `auth.createIdProvider` (recommended)
+### Configure via `auth.createIdProvider`
 
 ```javascript
 var authLib = require('/lib/xp/auth');
@@ -67,33 +59,7 @@ authLib.createIdProvider({
 });
 ```
 
-### Configure via `com.enonic.app.ldapidprovider.cfg`
-
-Place keys under `idprovider.<idProviderName>.<field>` so the same cfg file can
-hold settings for several id providers:
-
-```ini
-idprovider.myldap.ldapDialect=ad
-idprovider.myldap.serverUrl=ldap://127.0.0.1:389
-idprovider.myldap.authDn=cn=Manager,dc=my-domain,dc=com
-idprovider.myldap.authPassword=secret
-idprovider.myldap.userBaseDn=dc=my-domain,dc=com
-idprovider.myldap.connectTimeout=60000
-idprovider.myldap.readTimeout=60000
-idprovider.myldap.createFromDn=false
-idprovider.myldap.defaultGroups=group:myldap:admins group:myldap:users
-idprovider.myldap.groupMappings.0.source=ldapGroup
-idprovider.myldap.groupMappings.0.sourceValue=Domain Admins
-idprovider.myldap.groupMappings.0.target=role:system.admin
-idprovider.myldap.groupMappings.1.source=ldapGroupDn
-idprovider.myldap.groupMappings.1.sourceValue=cn=Developers,ou=Groups,dc=example,dc=com
-idprovider.myldap.groupMappings.1.target=group:myldap:developers
-idprovider.myldap.title=LDAP Login
-idprovider.myldap.theme=light-blue
-```
-
-`defaultGroups` is a space-separated list of principal keys. Group mappings use
-the indexed-key shape (`groupMappings.<N>.source` etc.).
+Any keys you leave out fall back to the defaults in the table above.
 
 ### Virtual host mapping
 
