@@ -16,6 +16,9 @@ exports.testHandle401 = function () {
 
 exports.testGet = function () {
     var result = idProvider.get({
+        method: 'GET',
+        rawPath: '/_/idprovider/system',
+        contextPath: '/_/idprovider/system',
         params: {}
     });
     assert.assertEquals('text/html', result.contentType);

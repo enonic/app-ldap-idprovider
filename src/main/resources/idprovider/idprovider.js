@@ -6,9 +6,13 @@ var configLib = require('/lib/config');
 var renderLib = require('/lib/render/render');
 var ldapLib = require('/lib/ldap');
 var groupMappingLib = require('/lib/groupMapping');
+const Router = require('/lib/router');
+const staticLib = require('/lib/enonic/static');
+
+const STATIC_BASE = '/_static';
 
 exports.handle401 = function (req) {
-    var body = renderLib.generateLoginPage();
+    var body = renderLib.generateLoginPage(req);
 
     return {
         status: 401,
@@ -17,15 +21,27 @@ exports.handle401 = function (req) {
     };
 };
 
-exports.get = function (req) {
+function renderLoginPage(req) {
     var redirectUrl = generateRedirectUrl();
-    var body = renderLib.generateLoginPage(redirectUrl);
+    var body = renderLib.generateLoginPage(req, redirectUrl);
 
     return {
         contentType: 'text/html',
         body: body
     };
-};
+}
+
+const router = Router();
+
+router.get(STATIC_BASE + '/{path:.*}', (req) => staticLib.requestHandler(req, {
+    index: false,
+    root: '/assets',
+    relativePath: (r) => r.pathParams.path,
+}));
+
+router.get('{path:.*}', renderLoginPage);
+
+exports.get = (req) => router.dispatch(req);
 
 exports.post = function (req) {
     var body = JSON.parse(req.body);
@@ -71,7 +87,7 @@ exports.post = function (req) {
         //If the user already exist in the user store
         if (user) {
 
-            //Updates the display name and email address 
+            //Updates the display name and email address
             runAsAdmin(() => {
                 user = authLib.modifyUser({
                     key: user.key,
@@ -222,7 +238,7 @@ function getClosestGroupFromDn(dn, idProviderKey) {
 
 exports.login = function (req) {
     var redirectUrl = (req.validTicket && req.params.redirect) || generateRedirectUrl();
-    var body = renderLib.generateLoginPage(redirectUrl);
+    var body = renderLib.generateLoginPage(req, redirectUrl);
 
     return {
         contentType: 'text/html',
