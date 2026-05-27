@@ -1,71 +1,69 @@
 var authLib = require('/lib/xp/auth');
-var portalLib = require('/lib/xp/portal');
-var appConfigLib = require('/lib/appConfig');
-
-// Config file format (in com.enonic.app.ldapidprovider.cfg):
-//
-//   idprovider.<idProviderName>.<field>=<value>
-//
-// Example for an id provider named "myldap":
-//
-//   idprovider.myldap.ldapDialect=ad
-//   idprovider.myldap.serverUrl=ldap://127.0.0.1:389
-//   idprovider.myldap.authDn=cn=Manager,dc=my-domain,dc=com
-//   idprovider.myldap.authPassword=secret
-//   idprovider.myldap.userBaseDn=dc=my-domain,dc=com
-//   idprovider.myldap.connectTimeout=60000
-//   idprovider.myldap.readTimeout=60000
-//   idprovider.myldap.createFromDn=false
-//   idprovider.myldap.defaultGroups=group:myldap:admins group:myldap:users
-//   idprovider.myldap.title=LDAP Login
-//   idprovider.myldap.theme=light-blue
-
-var CONFIG_NAMESPACE = 'idprovider';
 
 exports.getIdProviderConfig = function () {
-    var idProviderName = portalLib.getIdProviderKey();
-    var idProviderKeyBase = CONFIG_NAMESPACE + '.' + idProviderName;
+    var c = authLib.getIdProviderConfig() || {};
 
-    var appConfig = appConfigLib.getConfig();
-
-    var hasFileConfig = Object.keys(appConfig).some(function (key) {
-        return key.indexOf(idProviderKeyBase + '.') === 0;
-    });
-
-    if (hasFileConfig) {
-        return getConfigFromFile(appConfig, idProviderKeyBase);
-    }
-
-    return authLib.getIdProviderConfig();
+    return {
+        ldapDialect: stringValue(c.ldapDialect, 'generic'),
+        serverUrl: stringValue(c.serverUrl, 'ldap://127.0.0.1:389'),
+        authDn: stringValue(c.authDn, ''),
+        authPassword: stringValue(c.authPassword, ''),
+        connectTimeout: longValue(c.connectTimeout, 60000),
+        readTimeout: longValue(c.readTimeout, 60000),
+        userBaseDn: stringValue(c.userBaseDn, ''),
+        createFromDn: booleanValue(c.createFromDn, false),
+        defaultGroups: stringArrayValue(c.defaultGroups),
+        groupMappings: groupMappingsValue(c.groupMappings),
+        title: stringValue(c.title, 'LDAP Login'),
+        theme: stringValue(c.theme, 'light-blue')
+    };
 };
 
-function getConfigFromFile(appConfig, idProviderKeyBase) {
-    return {
-        ldapDialect: appConfig[idProviderKeyBase + '.ldapDialect'] || 'generic',
-        serverUrl: appConfig[idProviderKeyBase + '.serverUrl'] || 'ldap://127.0.0.1:389',
-        authDn: appConfig[idProviderKeyBase + '.authDn'] || '',
-        authPassword: appConfig[idProviderKeyBase + '.authPassword'] || '',
-        connectTimeout: parseLong(appConfig[idProviderKeyBase + '.connectTimeout'], 60000),
-        readTimeout: parseLong(appConfig[idProviderKeyBase + '.readTimeout'], 60000),
-        userBaseDn: appConfig[idProviderKeyBase + '.userBaseDn'] || '',
-        createFromDn: appConfig[idProviderKeyBase + '.createFromDn'] === 'true',
-        defaultGroups: parseStringArray(appConfig[idProviderKeyBase + '.defaultGroups']),
-        title: appConfig[idProviderKeyBase + '.title'] || 'LDAP Login',
-        theme: appConfig[idProviderKeyBase + '.theme'] || 'light-blue'
-    };
-}
-
-function parseLong(value, defaultValue) {
-    if (value === undefined || value === null) {
-        return defaultValue;
+function stringValue(value, defaultValue) {
+    if (value !== undefined && value !== null && value !== '') {
+        return String(value);
     }
-    var parsed = parseInt(value, 10);
-    return isNaN(parsed) ? defaultValue : parsed;
+    return defaultValue;
 }
 
-function parseStringArray(value) {
+function longValue(value, defaultValue) {
+    var parsed = parseInt(value, 10);
+    if (!isNaN(parsed)) {
+        return parsed;
+    }
+    return defaultValue;
+}
+
+function booleanValue(value, defaultValue) {
+    if (value === true || value === false) {
+        return value;
+    }
+    if (typeof value === 'string' && value !== '') {
+        return value === 'true';
+    }
+    return defaultValue;
+}
+
+function stringArrayValue(value) {
     if (!value) {
         return [];
     }
-    return value.split(' ').filter(function (v) { return !!v; });
+    if (value.constructor === Array) {
+        return value;
+    }
+    return [value];
+}
+
+function groupMappingsValue(value) {
+    if (!value) {
+        return [];
+    }
+    var arr = (value.constructor === Array) ? value : [value];
+    return arr.map(function (m) {
+        return {
+            source: m.source,
+            sourceValue: m.sourceValue,
+            target: m.target
+        };
+    });
 }

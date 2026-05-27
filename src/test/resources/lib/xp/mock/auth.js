@@ -1,10 +1,4 @@
-var idProviderConfigJson = {
-    title: "User Login Test",
-    forgotPassword: {
-        email: "noreply@example.com",
-        site: "WebsiteTest"
-    }
-};
+var idProviderConfigJson = null;
 var userJson = null;
 
 var mock = {
@@ -21,6 +15,10 @@ var mock = {
 
 exports.mockUser = function (json) {
     userJson = json;
+};
+
+exports.setIdProviderConfig = function (json) {
+    idProviderConfigJson = json;
 };
 
 __.registerMock('/lib/xp/auth.js', mock);
