@@ -26,6 +26,10 @@ test {
     useJUnitPlatform()
 }
 
+xp {
+    scriptEngines = ['Nashorn', 'GraalJS']
+}
+
 repositories {
     mavenLocal()
     mavenCentral()

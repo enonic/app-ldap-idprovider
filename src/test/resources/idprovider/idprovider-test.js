@@ -38,7 +38,7 @@ exports.testLogin = function () {
 exports.testLogout = function () {
     var result = idProvider.logout({});
 
-    assert.assertTrue(result.redirect);
+    assert.assertNotNull(result.redirect);
 };
 
 function assertLoginPage(body) {
